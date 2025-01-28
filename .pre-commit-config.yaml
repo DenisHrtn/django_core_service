@@ -1,0 +1,40 @@
+repos:
+  - repo: https://github.com/PyCQA/flake8.git
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        name: flake8
+        args:
+          - --max-line-length=88
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.5.0
+    hooks:
+      - id: mypy
+        name: mypy
+        args: [--ignore-missing-imports]
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.10.0
+    hooks:
+      - id: isort
+        name: isort
+        args:
+          - '--profile'
+          - 'black'
+          - '--skip-glob'
+          - '**/migrations/*'
+          - '--skip-glob'
+          - '**/__init__.py'
+  - repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+      - id: black
+        name: black
+        args: ['--line-length', '88']
+  - repo: https://github.com/PyCQA/pylint
+    rev: v2.15.9
+    hooks:
+      - id: pylint
+        name: pylint
+        args:
+          - '--max-line-length=88'
+          - '--disable=import-error,missing-module-docstring'
