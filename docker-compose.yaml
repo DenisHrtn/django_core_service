@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  django:
+    build: .
+    command: /app/entrypoint.sh
+    environment:
+      - POSTGRES_HOST=db
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: curl --fail http://localhost:8000/health/ || exit 1
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    restart: always
+
+  celery:
+    build: .
+    command: /app/entrypoint-celery.sh
+    environment:
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=db
+    depends_on:
+      - db
+      - redis
+      - django
+
+  redis:
+    image: redis:7.4.2
+    ports:
+      - "6379:6379"
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
