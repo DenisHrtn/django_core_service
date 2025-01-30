@@ -4,9 +4,14 @@ services:
   django:
     build: .
     command: /app/entrypoint.sh
-    environment:
-      - POSTGRES_HOST=db
+    env_file:
+      - .env
+    environment: &anchor_pointer
+      POSTGRES_HOST: db
+      REDIS: redis
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
     depends_on:
+      - redis
       - db
     ports:
       - "8000:8000"
@@ -17,33 +22,62 @@ services:
       start_period: 10s
       retries: 3
     restart: always
+    container_name: django
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
 
   celery:
     build: .
     command: /app/entrypoint-celery.sh
+    env_file:
+      - .env
     environment:
-      - REDIS_HOST=redis
-      - POSTGRES_HOST=db
+      <<: *anchor_pointer
     depends_on:
       - db
       - redis
       - django
+    container_name: celery
 
   redis:
     image: redis:7.4.2
     ports:
       - "6379:6379"
+    env_file:
+      - .env
+    container_name: redis
+
+  flower:
+    build:
+      context: .
+    command: celery -A django_core_service flower --port=5555 --broker=redis://redis/0 --basic-auth=admin@gmail.com:admin
+    restart: always
+    image: flower
+    container_name: flower
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+    ports:
+      - "5555:5555"
+    depends_on:
+      - celery
+      - redis
 
   db:
     image: postgres:15
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
+    container_name: db_postgres
 
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:

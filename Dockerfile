@@ -36,7 +36,7 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 COPY entrypoint.sh entrypoint-celery.sh ./
-COPY pyproject.toml poetry.lock .env ./
+COPY pyproject.toml poetry.lock ./
 COPY src /app/src
 
 # даем юзеру права на выполнение скриптов
