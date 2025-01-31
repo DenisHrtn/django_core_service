@@ -26,8 +26,6 @@ services:
     volumes:
       - static_volume:/app/static
       - media_volume:/app/media
-    profiles:
-      - dev
 
   celery:
     build: .
@@ -42,7 +40,7 @@ services:
       - django
     container_name: celery
     profiles:
-      - dev
+      - celery
 
   redis:
     image: redis:7.4.2
@@ -52,7 +50,7 @@ services:
       - .env
     container_name: redis
     profiles:
-      - dev
+      - redis
 
   flower:
     build:
@@ -69,7 +67,7 @@ services:
       - celery
       - redis
     profiles:
-      - dev
+      - celery
 
   db:
     image: postgres:15
@@ -84,8 +82,6 @@ services:
     ports:
       - "5432:5432"
     container_name: db_postgres
-    profiles:
-      - dev
 
 volumes:
   postgres_data:
