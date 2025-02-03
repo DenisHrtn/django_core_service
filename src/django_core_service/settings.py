@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "drf_yasg",
     "projects.apps.ProjectsConfig",
-    "tasks.apps.TasksConfig",
+    "tickets.apps.TicketsConfig",
 ]
 
 MIDDLEWARE = [

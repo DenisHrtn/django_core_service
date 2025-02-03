@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Invite(models.Model):
@@ -9,32 +10,48 @@ class Invite(models.Model):
     """
 
     class StatusChoices(models.TextChoices):
-        PENDING = "pending"
-        ACCEPTED = "accepted"
-        REJECTED = "rejected"
+        PENDING = "pending", _("Ожидает подтверждения")
+        ACCEPTED = "accepted", _("Принято")
+        REJECTED = "rejected", _("Отклонено")
 
-    invite_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    invite_id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name=_("ID инвайта"),
+    )
 
     project_id = models.ForeignKey(
         "projects.Project",
         on_delete=models.CASCADE,
         related_name="invites",
-        help_text="Проект к которому был сделан инвайт для пользователя",
+        help_text=_("Проект"),
+        verbose_name=_("Проект"),
     )
 
     token = models.UUIDField(
         default=uuid.uuid4,
         unique=True,
-        help_text="Специальный токен отправляемый на почту приглашенному пользователю",
+        help_text=_("Специальный токен"),
+        verbose_name=_("Токен инвайта"),
     )
 
     email = models.EmailField(
         null=False,
-        help_text="Почта пользователя на которую придет приглашение на проект",
+        help_text=_("Почта пользователя"),
+        verbose_name=_("Email приглашенного"),
     )
 
     status = models.CharField(
-        max_length=8, choices=StatusChoices.choices, default=StatusChoices.PENDING
+        max_length=8,
+        choices=StatusChoices.choices,
+        default=StatusChoices.PENDING,
+        verbose_name=_("Статус инвайта"),
+        help_text=_("Статус приглашения: ожидает, принято, отклонено"),
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Дата создания"),
+        help_text=_("Дата и время создания инвайта"),
+    )
