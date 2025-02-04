@@ -14,6 +14,8 @@ if not SECRET_KEY:
 
 DEBUG = os.getenv("DJANGO_DEBUG")
 
+AUTH_SECRET_KEY = os.getenv("AUTH_SECRET_KEY")
+
 ALLOWED_HOSTS: List[str] = ["0.0.0.0", "127.0.0.1", "localhost"]
 
 INSTALLED_APPS = [
@@ -31,6 +33,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "projects.apps.ProjectsConfig",
     "tickets.apps.TicketsConfig",
+    "common_services.apps.CommonServicesConfig",
 ]
 
 MIDDLEWARE = [
@@ -41,6 +44,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "common_services.middlewares.JWTAuthMiddleware",
 ]
 
 ROOT_URLCONF = "django_core_service.urls"
@@ -121,12 +125,13 @@ CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",
-    ],
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ],
+# }
+#
+# SIMPLE_JWT = {
+#     "ALGORITHM": "HS256",
+#     "SIGNING_KEY": AUTH_SECRET_KEY,
+# }

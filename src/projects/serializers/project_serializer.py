@@ -12,3 +12,12 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = "__all__"
         read_only_fields = ("project_id", "created_at", "updated_at")
+
+    def update(self, instance, validated_data):
+        """
+        Метод обновления проекта
+        """
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+        instance.save()
+        return instance

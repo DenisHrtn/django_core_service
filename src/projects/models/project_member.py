@@ -13,8 +13,7 @@ class ProjectMember(models.Model):
     member_id = models.SlugField(
         primary_key=True,
         max_length=36,
-        unique=True,
-        default=lambda: str(uuid.uuid4()),
+        default=uuid.uuid4,
         verbose_name=_("ID участника"),
     )
 

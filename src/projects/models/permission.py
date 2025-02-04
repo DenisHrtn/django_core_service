@@ -1,5 +1,3 @@
-import uuid
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -10,12 +8,13 @@ class Permission(models.Model):
     """
 
     class TagsChoices(models.TextChoices):
-        OWNER = "owner", _("Владелец")
-        EDITOR = "editor", _("Редактор")
+        CREATOR = "creator", _("Создание")
+        EDITOR = "editor", _("Редактирование")
         VIEWER = "viewer", _("Просмотр")
+        DELETER = "deleter", _("Удаление")
+        ADMIN = "admin", _("Администрирование")
 
-    permission_id = models.UUIDField(
-        default=uuid.uuid4,
+    permission_id = models.AutoField(
         editable=False,
         primary_key=True,
         verbose_name=_("ID разрешения"),
@@ -37,7 +36,7 @@ class Permission(models.Model):
     )
 
     tag = models.CharField(
-        max_length=6,
+        max_length=12,
         choices=TagsChoices.choices,
         default=TagsChoices.VIEWER,
         null=False,
