@@ -38,7 +38,7 @@ class ProjectServiceTestCase(TestCase):
 
     def test_get_all_projects_viewer(self):
         """
-        Обычный участник видит только те проекты,
+        Обычный пользователь видит только те проекты,
         в которых он состоит.
         """
         projects = ProjectService.get_all_projects(

@@ -8,7 +8,7 @@ from rest_framework.mixins import (
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from common_services.permissions.check_permissions import ProjectPermission
+from common_services.permissions.project_permission import ProjectPermission
 from projects.models import Project
 from projects.serializers.project_serializer import ProjectSerializer
 from projects.services.project_service import ProjectService
@@ -77,5 +77,5 @@ class ProjectDeleteViewSet(DestroyModelMixin, GenericViewSet):
 
     def destroy(self, request, *args, **kwargs):
         project = self.get_object()
-        result = ProjectService.delete_project(project)
-        return Response(result, status=200)
+        deleted_project = ProjectService.delete_project(project)
+        return Response(deleted_project, status=204)

@@ -22,8 +22,13 @@ class ProjectPermission(BasePermission):
         if role_name == "admin":
             return True
 
-        if view.action == "create":
-            return self._can_create(role_name)
+        match view.action:
+            case "create":
+                return self._can_create(role_name)
+            case "update":
+                return self._can_update(role_name)
+            case "delete":
+                return self._can_delete(role_name)
 
         return True
 

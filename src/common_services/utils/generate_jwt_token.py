@@ -6,7 +6,7 @@ SECRET_KEY = "BZdZBJCPXomiijXAbNqNrx0ihDBofzqH"
 ALGORITHM = "HS256"
 
 
-def generate_jwt_token(user_id=1, role_name="admin", email="test@example.com"):
+def generate_jwt_token(user_id=1, role_name="admin", email="test2@example.com"):
     payload = {
         "user_id": user_id,
         "role_name": role_name,

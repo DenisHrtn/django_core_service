@@ -1,6 +1,11 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
+from .views.project_members import (
+    ProjectMembersDeleteViewSet,
+    ProjectMembersReadOnlyViewSet,
+    ProjectMembersUpdateViewSet,
+)
 from .views.projects import (
     ProjectCreateViewSet,
     ProjectDeleteViewSet,
@@ -26,6 +31,28 @@ urlpatterns = [
         "projects/<int:pk>/delete/",
         ProjectDeleteViewSet.as_view({"delete": "destroy"}),
         name="project-delete",
+    ),
+    path(
+        "projects/<int:project_id>/members/",
+        ProjectMembersReadOnlyViewSet.as_view({"get": "list"}),
+        name="project-members",
+    ),
+    path(
+        "projects/<int:project_id>/members/<int:member_id>/",
+        ProjectMembersReadOnlyViewSet.as_view({"get": "retrieve"}),
+        name="project-members",
+    ),
+    path(
+        "projects/<int:project_id>/members-update/<int:member_id>/",
+        ProjectMembersUpdateViewSet.as_view(
+            {"put": "update", "patch": "partial_update"}
+        ),
+        name="project-members",
+    ),
+    path(
+        "projects/<int:project_id>/members-destroy/<int:member_id>/",
+        ProjectMembersDeleteViewSet.as_view({"delete": "destroy"}),
+        name="project-members",
     ),
 ]
 

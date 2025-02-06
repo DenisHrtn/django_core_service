@@ -38,4 +38,4 @@ repos:
         args:
           - '--max-line-length=88'
           - '--disable=import-error,missing-module-docstring,missing-class-docstring,missing-function-docstring,
-          inconsistent-return-statements,too-few-public-methods,invalid-name,unused-argument'
+          inconsistent-return-statements,too-few-public-methods,invalid-name,unused-argument,duplicate-code'

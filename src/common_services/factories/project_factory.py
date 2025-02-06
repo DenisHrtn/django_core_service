@@ -17,8 +17,9 @@ class ProjectFactory(DjangoModelFactory):
     slug = factory.LazyAttribute(lambda obj: slugify(obj.name))
     description = factory.Faker("paragraph")
 
+    @staticmethod
     @factory.post_generation
-    def set_slug(self, obj, create, extracted, **kwargs):
+    def set_slug(obj, create, extracted, **kwargs):
         """
         Автоматически задаёт slug,
         если он не указан
