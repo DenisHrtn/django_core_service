@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from typing import List
 
+from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -94,11 +95,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = "ru"
 
 USE_I18N = True
+
+LANGUAGES = [
+    ("en", _("English")),
+    ("ru", _("Русский")),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
+
+TIME_ZONE = "UTC"
 
 USE_TZ = True
 

@@ -1,37 +1,81 @@
+from rest_framework.mixins import (
+    CreateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import GenericViewSet
 
+from common_services.permissions.check_permissions import ProjectPermission
+from projects.models import Project
 from projects.serializers.project_serializer import ProjectSerializer
 from projects.services.project_service import ProjectService
 
 
-class ProjectViewSet(ViewSet):
-    def list(self, request):
-        projects = ProjectService.get_all_projects(request)
-        serializer = ProjectSerializer(projects, many=True)
-        return Response(serializer.data, status=200)
+class ProjectReadOnlyViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """
+    ViewSet для просмотра проектов.
+    """
 
-    def retrieve(self, request, pk=None):
-        project = ProjectService.get_project_by_id(request=request, project_id=pk)
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data, status=200)
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [ProjectPermission]
 
-    def create(self, request):
+    def list(self, request, *args, **kwargs):
+        projects = ProjectService.get_all_projects(request.user_id, request.role_name)
+        serializer = self.get_serializer(projects, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        project_id = kwargs.get("pk")
+        project = ProjectService.get_project_by_id(project_id=project_id)
+        serializer = self.get_serializer(project)
+        return Response(serializer.data)
+
+
+class ProjectCreateViewSet(CreateModelMixin, GenericViewSet):
+    """
+    ViewSet для создания проектов.
+    """
+
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [ProjectPermission]
+
+    def create(self, request, *args, **kwargs):
         project = ProjectService.create_new_project(request=request, data=request.data)
+        return Response(project, status=201)
 
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data, status=201)
 
-    def update(self, request, pk=None):
-        project = ProjectService.update_project(request=request, data=request.data)
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data, status=200)
+class ProjectUpdateViewSet(UpdateModelMixin, GenericViewSet):
+    """
+    ViewSet для обновления проектов.
+    """
 
-    def partial_update(self, request, pk=None):
-        project = ProjectService.update_project(request=request, data=request.data)
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data, status=200)
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [ProjectPermission]
 
-    def destroy(self, request, pk=None):
-        project = ProjectService.delete_project(request=request, project_id=pk)
-        return Response({"status": project}, status=200)
+    def update(self, request, *args, **kwargs):
+        project = self.get_object()
+        updated_project = ProjectService.update_project(request.data, project)
+        return Response(updated_project, status=200)
+
+    def partial_update(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+
+class ProjectDeleteViewSet(DestroyModelMixin, GenericViewSet):
+    """
+    ViewSet для удаления проектов.
+    """
+
+    queryset = Project.objects.all()
+    permission_classes = [ProjectPermission]
+
+    def destroy(self, request, *args, **kwargs):
+        project = self.get_object()
+        result = ProjectService.delete_project(project)
+        return Response(result, status=200)

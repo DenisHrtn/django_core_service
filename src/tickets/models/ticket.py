@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -16,8 +14,7 @@ class Ticket(models.Model):
         IN_PROGRESS = "IN_PROGRESS", _("В процессе")
         COMPLETED = "COMPLETED", _("Завершено")
 
-    ticket_id = models.UUIDField(
-        default=uuid4,
+    ticket_id = models.BigAutoField(
         editable=False,
         primary_key=True,
         verbose_name=_("ID задачи"),
@@ -25,7 +22,6 @@ class Ticket(models.Model):
 
     title = models.CharField(
         max_length=255,
-        null=False,
         unique=True,
         help_text=_("Название задачи"),
         verbose_name=_("Заголовок"),
@@ -41,14 +37,12 @@ class Ticket(models.Model):
         max_length=15,
         choices=StatusChoices.choices,
         default=StatusChoices.IN_PROGRESS,
-        null=False,
         help_text=_("Статус задачи"),
         verbose_name=_("Статус"),
     )
 
     creator = models.CharField(
         max_length=255,
-        null=False,
         help_text=_("Почта создателя конкретной задачи"),
         verbose_name=_("Создатель"),
     )

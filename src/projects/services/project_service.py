@@ -1,85 +1,60 @@
 from typing import Dict, List, Optional, Union
 
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpRequest
 from rest_framework.exceptions import NotFound
 
-from common_services.permissions.check_permissions import PermissionCheck
 from common_services.utils.decode_jwt_token import decode_jwt_token
-from projects.models.project import Project
-from projects.models.project_member import ProjectMember
-from projects.models.role import Role
+from projects.models import Project, ProjectMember, Role
 from projects.serializers.project_serializer import ProjectSerializer
 
 
 class ProjectService:
     """
-    Сервис для CRUD-операций и
-    различных методов над сущностями Project
+    Сервис для CRUD-операций с проектами.
     """
 
     @staticmethod
-    def get_all_projects(request: HttpRequest) -> List[Project]:
+    def get_all_projects(user_id: int, role_name: str) -> List[Project]:
         """
-        Метод для получения всех доступных проектов
-        :param token: JWT-token
-        :return: project(-s) if any
+        Получение всех проектов
+        :param user_id: int
+        :param role_name: str
+        :return: list of projects
         """
-        user_id, role_name, _ = decode_jwt_token(request)
-
         if role_name == "admin":
             return Project.objects.all()
 
-        projects = (
+        return (
             Project.objects.prefetch_related("projectmember_set")
             .filter(projectmember__user_id=user_id)
             .distinct()
         )
-        return projects
 
     @staticmethod
-    def get_project_by_id(project_id: str, request: HttpRequest) -> Optional[Project]:
+    def get_project_by_id(project_id: int) -> Optional[Project]:
         """
-        Метод для получения конкретного проекта
-        :param project_id: project id
-        :param token: JWT-token
+        Получение конкретного проекта
+        :param project_id: int
         :return: project if any
         """
-        user_id, role_name, _ = decode_jwt_token(request)
-
-        if role_name == "admin":
-            try:
-                project = Project.objects.get(pk=project_id)
-                return project
-            except ObjectDoesNotExist as exc:
-                raise NotFound("Проект не найден") from exc
-        else:
-            try:
-                project = Project.objects.prefetch_related("projectmember_set").get(
-                    project_id=project_id, projectmember__user_id=user_id
-                )
-                return project
-            except ObjectDoesNotExist as exc:
-                raise NotFound("Проект не найден") from exc
+        try:
+            return Project.objects.get(pk=project_id)
+        except ObjectDoesNotExist as exc:
+            raise NotFound("Проект не найден") from exc
 
     @staticmethod
     def create_new_project(
-        data: Dict[str, Union[str, int]],
-        request: HttpRequest,
+        data: Dict[str, Union[str, int]], request: HttpRequest
     ) -> Dict[str, Union[str, int]]:
         """
-        Метод для создания проекта
-        :param data: request data
-        :param token: JWT-token
+        Создание проекта
+        :param data: dict
+        :param request: HttpRequest
         :return: new project
         """
-        user_id, role_name, email = decode_jwt_token(request)
-        print(user_id, role_name, email)
-        permission_check = PermissionCheck(role_name=role_name)
-
-        if not permission_check.can_create():
-            raise PermissionDenied("Вы не можете создавать проекты!")
+        user_id, role_name, email = decode_jwt_token(request=request)
 
         role_permissions = (
             Role.objects.filter(role_name=role_name)
@@ -89,79 +64,37 @@ class ProjectService:
 
         with transaction.atomic():
             serializer = ProjectSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            project = serializer.save()
 
-            if serializer.is_valid(raise_exception=True):
-                project = serializer.save()
+            ProjectMember.objects.create(
+                project_id=project,
+                user_id=user_id,
+                email=email,
+                permissions=role_permissions,
+            )
 
-                project_member = ProjectMember.objects.create(
-                    project_id=project,
-                    user_id=user_id,
-                    email=email,
-                    permissions=role_permissions,
-                )
-                project_member.save()
-
-                return serializer.data
-            return serializer.errors
-
-    @staticmethod
-    def update_project(
-        data: Dict[str, Union[str, int]], request: HttpRequest
-    ) -> Dict[str, Union[str, int]]:
-        """
-        Метод для обновления проекта
-        :param data: request data
-        :param token: JWT-token
-        :return: data
-        """
-        _, role_name, _ = decode_jwt_token(request)
-
-        permission_check = PermissionCheck(role_name=role_name)
-
-        if not permission_check.can_update():
-            raise PermissionDenied("Вы не можете обновлять проект!")
-
-        project_id = data.get("project_id") or request.parser_context["kwargs"].get(
-            "pk"
-        )
-
-        if not project_id:
-            raise ObjectDoesNotExist("Не указан project_id")
-
-        try:
-            project = Project.objects.get(project_id=project_id)
-        except ObjectDoesNotExist as exc:
-            raise NotFound("Проект не найден") from exc
-
-        serializer = ProjectSerializer(instance=project, data=data, partial=True)
-
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
             return serializer.data
-        return serializer.errors
 
     @staticmethod
-    def delete_project(request: HttpRequest, project_id: int) -> Dict[str, str]:
+    def update_project(data, project: Project) -> Project:
         """
-        Метод для удаления проекта
-        :param data: request data
-        :param token: JWT-token
-        :param project_id: project id
-        :return:
+        Обновление проекта
+        :param data: dict
+        :param project: Project
+        :return: updated project
         """
-        _, role_name, _ = decode_jwt_token(request)
+        serializer = ProjectSerializer(instance=project, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return serializer.data
 
-        permission_check = PermissionCheck(role_name=role_name)
-
-        if not permission_check.can_delete():
-            raise PermissionDenied("Вы не можете удалять проекты!")
-
-        with transaction.atomic():
-            try:
-                project = Project.objects.get(project_id=project_id)
-            except ObjectDoesNotExist as exc:
-                raise NotFound("Проект не найден") from exc
-
-            project.delete()
-
-            return {"detail": "Проект успешно удален"}
+    @staticmethod
+    def delete_project(project: Project):
+        """
+        Удаление проекта
+        :param project:
+        :return: message about successfully deleted project
+        """
+        project.delete()
+        return {"detail": "Проект успешно удален"}

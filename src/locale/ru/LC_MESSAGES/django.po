@@ -1,0 +1,327 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-05 14:49+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+#: django_core_service/settings.py:103
+msgid "English"
+msgstr ""
+
+#: django_core_service/settings.py:104
+msgid "Русский"
+msgstr ""
+
+#: projects/models/invite.py:13
+msgid "Ожидает подтверждения"
+msgstr ""
+
+#: projects/models/invite.py:14
+msgid "Принято"
+msgstr ""
+
+#: projects/models/invite.py:15
+msgid "Отклонено"
+msgstr ""
+
+#: projects/models/invite.py:21
+msgid "ID инвайта"
+msgstr ""
+
+#: projects/models/invite.py:28 projects/models/invite.py:29
+#: projects/models/project_member.py:24
+msgid "Проект"
+msgstr ""
+
+#: projects/models/invite.py:35
+msgid "Специальный токен"
+msgstr ""
+
+#: projects/models/invite.py:36
+msgid "Токен инвайта"
+msgstr ""
+
+#: projects/models/invite.py:41
+msgid "Почта пользователя"
+msgstr ""
+
+#: projects/models/invite.py:42
+msgid "Email приглашенного"
+msgstr ""
+
+#: projects/models/invite.py:49
+msgid "Статус инвайта"
+msgstr ""
+
+#: projects/models/invite.py:50
+msgid "Статус приглашения: ожидает, принято, отклонено"
+msgstr ""
+
+#: projects/models/invite.py:55 projects/models/project.py:34
+#: tickets/models/ticket.py:79
+msgid "Дата создания"
+msgstr ""
+
+#: projects/models/invite.py:56
+msgid "Дата и время создания инвайта"
+msgstr ""
+
+#: projects/models/permission.py:11
+msgid "Создание"
+msgstr ""
+
+#: projects/models/permission.py:12
+msgid "Редактирование"
+msgstr ""
+
+#: projects/models/permission.py:13
+msgid "Просмотр"
+msgstr ""
+
+#: projects/models/permission.py:14
+msgid "Удаление"
+msgstr ""
+
+#: projects/models/permission.py:15
+msgid "Администрирование"
+msgstr ""
+
+#: projects/models/permission.py:20
+msgid "ID разрешения"
+msgstr ""
+
+#: projects/models/permission.py:26
+msgid "Имя разрешения для роли пользователя"
+msgstr ""
+
+#: projects/models/permission.py:27
+msgid "Название разрешения"
+msgstr ""
+
+#: projects/models/permission.py:32
+msgid "Описание возможностей конкретного разрешения"
+msgstr ""
+
+#: projects/models/permission.py:33 projects/models/project.py:29
+#: projects/models/role.py:30 tickets/models/ticket.py:37
+msgid "Описание"
+msgstr ""
+
+#: projects/models/permission.py:40
+msgid "Тип роли"
+msgstr ""
+
+#: projects/models/permission.py:41
+msgid "Категория разрешения: владелец, редактор, просмотр"
+msgstr ""
+
+#: projects/models/project.py:15
+msgid "ID проекта"
+msgstr ""
+
+#: projects/models/project.py:22
+msgid "Имя проекта"
+msgstr ""
+
+#: projects/models/project.py:23 projects/models/role.py:26
+msgid "Название"
+msgstr ""
+
+#: projects/models/project.py:28
+msgid "Описание проекта"
+msgstr ""
+
+#: projects/models/project.py:35
+msgid "Дата и время создания проекта"
+msgstr ""
+
+#: projects/models/project.py:40 tickets/models/ticket.py:85
+msgid "Дата обновления"
+msgstr ""
+
+#: projects/models/project.py:41
+msgid "Дата и время последнего обновления проекта"
+msgstr ""
+
+#: projects/models/project_member.py:17
+msgid "ID участника"
+msgstr ""
+
+#: projects/models/project_member.py:23
+msgid "Проект, который относится к конкретному участнику"
+msgstr ""
+
+#: projects/models/project_member.py:29
+msgid "Пользователь, соотносящийся с участником"
+msgstr ""
+
+#: projects/models/project_member.py:30 projects/models/role.py:43
+msgid "ID пользователя"
+msgstr ""
+
+#: projects/models/project_member.py:36
+msgid "Почта участника проекта"
+msgstr ""
+
+#: projects/models/project_member.py:37
+msgid "Email"
+msgstr ""
+
+#: projects/models/project_member.py:43
+msgid "Разрешения"
+msgstr ""
+
+#: projects/models/project_member.py:44
+msgid "Список разрешений участника"
+msgstr ""
+
+#: projects/models/role.py:17
+msgid "ID роли"
+msgstr ""
+
+#: projects/models/role.py:18
+msgid "ID"
+msgstr ""
+
+#: projects/models/role.py:25
+msgid "Название роли"
+msgstr ""
+
+#: projects/models/role.py:30
+msgid "Описание роли"
+msgstr ""
+
+#: projects/models/role.py:36
+msgid "Разрешения для роли"
+msgstr ""
+
+#: projects/models/role.py:37
+msgid "Разршения"
+msgstr ""
+
+#: projects/models/role.py:42
+msgid "Пользователь, соотносящийся с ролью"
+msgstr ""
+
+#: tickets/models/ticket.py:14
+msgid "Архивировано"
+msgstr ""
+
+#: tickets/models/ticket.py:15
+msgid "К выполнению"
+msgstr ""
+
+#: tickets/models/ticket.py:16
+msgid "В процессе"
+msgstr ""
+
+#: tickets/models/ticket.py:17
+msgid "Завершено"
+msgstr ""
+
+#: tickets/models/ticket.py:23
+msgid "ID задачи"
+msgstr ""
+
+#: tickets/models/ticket.py:30
+msgid "Название задачи"
+msgstr ""
+
+#: tickets/models/ticket.py:31
+msgid "Заголовок"
+msgstr ""
+
+#: tickets/models/ticket.py:36
+msgid "Описание задачи"
+msgstr ""
+
+#: tickets/models/ticket.py:45
+msgid "Статус задачи"
+msgstr ""
+
+#: tickets/models/ticket.py:46
+msgid "Статус"
+msgstr ""
+
+#: tickets/models/ticket.py:52
+msgid "Почта создателя конкретной задачи"
+msgstr ""
+
+#: tickets/models/ticket.py:53
+msgid "Создатель"
+msgstr ""
+
+#: tickets/models/ticket.py:60
+msgid "Список ID пользователей, назначенных на задачу"
+msgstr ""
+
+#: tickets/models/ticket.py:61
+msgid "Назначенные пользователи"
+msgstr ""
+
+#: tickets/models/ticket.py:66
+msgid "Нужны ли уведомления по задаче"
+msgstr ""
+
+#: tickets/models/ticket.py:67
+msgid "Уведомления"
+msgstr ""
+
+#: tickets/models/ticket.py:73
+msgid "Дедлайн выполнения задачи"
+msgstr ""
+
+#: tickets/models/ticket.py:74
+msgid "Крайний срок"
+msgstr ""
+
+#: tickets/models/ticket.py:80
+msgid "Дата и время создания задачи"
+msgstr ""
+
+#: tickets/models/ticket.py:86
+msgid "Дата и время последнего обновления задачи"
+msgstr ""
+
+#: tickets/models/ticket_notification.py:13
+msgid "ID уведомления"
+msgstr ""
+
+#: tickets/models/ticket_notification.py:20
+msgid "Задача, к которой привязано уведомление"
+msgstr ""
+
+#: tickets/models/ticket_notification.py:21
+msgid "Задача"
+msgstr ""
+
+#: tickets/models/ticket_notification.py:26
+msgid "Пользователь, которому отправится уведомление"
+msgstr ""
+
+#: tickets/models/ticket_notification.py:27
+msgid "Пользователь"
+msgstr ""
+
+#: tickets/models/ticket_notification.py:31
+msgid "Время отправки уведомления"
+msgstr ""
+
+#: tickets/models/ticket_notification.py:32
+msgid "Время уведомления"
+msgstr ""

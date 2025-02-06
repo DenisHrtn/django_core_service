@@ -14,7 +14,7 @@ class Invite(models.Model):
         ACCEPTED = "accepted", _("Принято")
         REJECTED = "rejected", _("Отклонено")
 
-    invite_id = models.UUIDField(
+    invite_id = models.BigAutoField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,

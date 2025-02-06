@@ -1,6 +1,5 @@
-import uuid
-
 from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 
@@ -9,9 +8,8 @@ class Project(models.Model):
     Модель для таблицы проектов
     """
 
-    project_id = models.UUIDField(
+    project_id = models.BigAutoField(
         primary_key=True,
-        default=uuid.uuid4,
         editable=False,
         verbose_name=_("ID проекта"),
     )
@@ -22,6 +20,14 @@ class Project(models.Model):
         null=False,
         help_text=_("Имя проекта"),
         verbose_name=_("Название"),
+    )
+
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
+        blank=True,
+        help_text=_("Читаемый URL проекта"),
+        verbose_name=_("Slug"),
     )
 
     description = models.TextField(
@@ -41,3 +47,13 @@ class Project(models.Model):
         verbose_name=_("Дата обновления"),
         help_text=_("Дата и время последнего обновления проекта"),
     )
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+            original_slug = self.slug
+            counter = 1
+            while Project.objects.filter(slug=self.slug).exists():
+                self.slug = f"{original_slug}-{counter}"
+                counter += 1
+        super().save(*args, **kwargs)

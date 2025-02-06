@@ -1,5 +1,3 @@
-import uuid
-
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -10,8 +8,7 @@ class Role(models.Model):
     Модель роли с ее пермишшенами
     """
 
-    role_id = models.UUIDField(
-        default=uuid.uuid4,
+    role_id = models.BigAutoField(
         editable=False,
         primary_key=True,
         help_text=_("ID роли"),
@@ -20,7 +17,6 @@ class Role(models.Model):
 
     role_name = models.CharField(
         max_length=255,
-        null=False,
         unique=True,
         help_text=_("Название роли"),
         verbose_name=_("Название"),
@@ -38,7 +34,6 @@ class Role(models.Model):
     )
 
     user_id = models.IntegerField(
-        null=False,
         help_text=_("Пользователь, соотносящийся с ролью"),
         verbose_name=_("ID пользователя"),
     )

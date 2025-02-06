@@ -1,5 +1,3 @@
-import uuid
-
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -10,10 +8,9 @@ class ProjectMember(models.Model):
     Модель для участника проекта
     """
 
-    member_id = models.SlugField(
+    member_id = models.BigAutoField(
         primary_key=True,
-        max_length=36,
-        default=uuid.uuid4,
+        unique=True,
         verbose_name=_("ID участника"),
     )
 

@@ -6,7 +6,7 @@ SECRET_KEY = "BZdZBJCPXomiijXAbNqNrx0ihDBofzqH"
 ALGORITHM = "HS256"
 
 
-def generate_mock_jwt(user_id=1, role_name="admin", email="test@example.com"):
+def generate_jwt_token(user_id=1, role_name="admin", email="test@example.com"):
     payload = {
         "user_id": user_id,
         "role_name": role_name,
@@ -16,5 +16,5 @@ def generate_mock_jwt(user_id=1, role_name="admin", email="test@example.com"):
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-mock_token = generate_mock_jwt()
+mock_token = generate_jwt_token()
 print(mock_token)

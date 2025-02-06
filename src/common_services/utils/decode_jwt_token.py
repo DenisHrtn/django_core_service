@@ -8,7 +8,7 @@ def decode_jwt_token(request: HttpRequest):
     """
     Функция для декодирования JWT-токена пришедшего с Auth-сервиса
     :param request:
-    :return: user_id, role_name
+    :return: user_id, role_name, email
     """
 
     auth_header = request.headers.get("Authorization")
