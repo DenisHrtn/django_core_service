@@ -74,7 +74,7 @@ class ProjectService:
                 permissions=role_permissions,
             )
 
-            return serializer.data
+            return {"id": project.project_id, **serializer.data}
 
     @staticmethod
     def update_project(data, project: Project) -> Project:
@@ -96,5 +96,7 @@ class ProjectService:
         :param project:
         :return: message about successfully deleted project
         """
-        project.delete()
-        return {"detail": "Проект успешно удален"}
+        if Project.objects.filter(pk=project.pk).exists():
+            project.delete()
+            return {"detail": "Проект успешно удален"}
+        raise ObjectDoesNotExist("Проект не найден")
