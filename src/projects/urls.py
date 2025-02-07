@@ -35,24 +35,22 @@ urlpatterns = [
     path(
         "projects/<int:project_id>/members/",
         ProjectMembersReadOnlyViewSet.as_view({"get": "list"}),
-        name="project-members",
+        name="project-members-list",
     ),
     path(
         "projects/<int:project_id>/members/<int:member_id>/",
         ProjectMembersReadOnlyViewSet.as_view({"get": "retrieve"}),
-        name="project-members",
+        name="project-members-detail",
     ),
     path(
         "projects/<int:project_id>/members-update/<int:member_id>/",
-        ProjectMembersUpdateViewSet.as_view(
-            {"put": "update", "patch": "partial_update"}
-        ),
-        name="project-members",
+        ProjectMembersUpdateViewSet.as_view({"patch": "partial_update"}),
+        name="project-members-update",
     ),
     path(
         "projects/<int:project_id>/members-destroy/<int:member_id>/",
         ProjectMembersDeleteViewSet.as_view({"delete": "destroy"}),
-        name="project-members",
+        name="project-members-delete",
     ),
 ]
 

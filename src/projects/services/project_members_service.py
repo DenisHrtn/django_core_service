@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import NotFound, ValidationError
 
-from projects.models import Project, ProjectMember
+from projects.models import ProjectMember
 from projects.serializers.project_memebers_serializer import ProjectMemberSerializer
 
 
@@ -20,16 +20,15 @@ class ProjectMembersService:
         :param role_name: str
         :return: list of project members
         """
+        project_members = ProjectMember.objects.filter(project_id=project_id)
 
-        try:
-            project = Project.objects.filter(project_id=project_id).first()
-        except ObjectDoesNotExist as exc:
-            raise NotFound("Проект не найден") from exc
+        if not project_members.exists():
+            raise NotFound("Проект не найден")
 
         if role_name == "admin":
-            return ProjectMember.objects.filter(project_id=project.project_id)
+            return project_members.select_related("project_id")
 
-        return ProjectMember.objects.filter(project_id=project.project_id)
+        return project_members
 
     @staticmethod
     def get_project_member_by_id(

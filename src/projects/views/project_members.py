@@ -7,10 +7,8 @@ from rest_framework.mixins import (
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from common_services.permissions.project_members_permissions import (
-    ProjectMemberPermissions,
-)
 from projects.models import ProjectMember
+from projects.permissions.project_members_permissions import ProjectMemberPermissions
 from projects.serializers.project_memebers_serializer import ProjectMemberSerializer
 from projects.services.project_members_service import ProjectMembersService
 
@@ -40,16 +38,13 @@ class ProjectMembersUpdateViewSet(UpdateModelMixin, GenericViewSet):
     serializer_class = ProjectMemberSerializer
     queryset = ProjectMember.objects.all()
 
-    def update(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
         updated_project_members = ProjectMembersService.update_project_member(
             member=kwargs["member_id"],
             data=request.data,
             project_id=kwargs["project_id"],
         )
         return Response(updated_project_members, status=200)
-
-    def partial_update(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
 
 
 class ProjectMembersDeleteViewSet(DestroyModelMixin, GenericViewSet):

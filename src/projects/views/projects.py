@@ -8,8 +8,8 @@ from rest_framework.mixins import (
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from common_services.permissions.project_permission import ProjectPermission
 from projects.models import Project
+from projects.permissions.project_permission import ProjectPermission
 from projects.serializers.project_serializer import ProjectSerializer
 from projects.services.project_service import ProjectService
 

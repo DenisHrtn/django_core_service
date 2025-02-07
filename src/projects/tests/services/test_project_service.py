@@ -31,37 +31,41 @@ class ProjectServiceTestCase(TestCase):
         """
         Администратор должен получать все проекты
         """
-        projects = ProjectService.get_all_projects(
-            user_id=self.user_id, role_name="admin"
-        )
-        self.assertEqual(projects.count(), Project.objects.count())
+        with self.assertNumQueries(2):
+            projects = ProjectService.get_all_projects(
+                user_id=self.user_id, role_name="admin"
+            )
+            self.assertEqual(projects.count(), Project.objects.count())
 
     def test_get_all_projects_viewer(self):
         """
         Обычный пользователь видит только те проекты,
         в которых он состоит.
         """
-        projects = ProjectService.get_all_projects(
-            user_id=self.user_id, role_name="viewer"
-        )
-        self.assertEqual(projects.count(), 1)
-        self.assertEqual(projects.first(), self.project1)
+        with self.assertNumQueries(3):
+            projects = ProjectService.get_all_projects(
+                user_id=self.user_id, role_name="viewer"
+            )
+            self.assertEqual(projects.count(), 1)
+            self.assertEqual(projects.first(), self.project1)
 
     def test_get_project_by_id_exists(self):
         """
         Тест получения проекта
         по ID (существующего).
         """
-        project = ProjectService.get_project_by_id(self.project1.project_id)
-        self.assertEqual(project, self.project1)
+        with self.assertNumQueries(1):
+            project = ProjectService.get_project_by_id(self.project1.project_id)
+            self.assertEqual(project, self.project1)
 
     def test_get_project_by_id_not_found(self):
         """
         Тест получения проекта по несуществующему ID
         (должен вызвать исключение).
         """
-        with self.assertRaises(NotFound):
-            ProjectService.get_project_by_id(9999)
+        with self.assertNumQueries(1):
+            with self.assertRaises(NotFound):
+                ProjectService.get_project_by_id(9999)
 
     def test_create_project_success(self):
         """
@@ -78,15 +82,16 @@ class ProjectServiceTestCase(TestCase):
             "description": "A test project",
         }
 
-        project = ProjectService.create_new_project(data=data, request=request)
+        with self.assertNumQueries(8):
+            project = ProjectService.create_new_project(data=data, request=request)
 
-        self.assertEqual(project["name"], data["name"])
-        self.assertEqual(project["description"], data["description"])
-        self.assertTrue(
-            ProjectMember.objects.filter(
-                project_id=project["id"], user_id=self.user_id
-            ).exists()
-        )
+            self.assertEqual(project["name"], data["name"])
+            self.assertEqual(project["description"], data["description"])
+            self.assertTrue(
+                ProjectMember.objects.filter(
+                    project_id=project["id"], user_id=self.user_id
+                ).exists()
+            )
 
     def test_create_project_invalid_data(self):
         """
@@ -116,12 +121,13 @@ class ProjectServiceTestCase(TestCase):
             "description": "Updated description",
         }
 
-        updated_project = ProjectService.update_project(
-            data=data, project=self.project1
-        )
+        with self.assertNumQueries(2):
+            updated_project = ProjectService.update_project(
+                data=data, project=self.project1
+            )
 
-        self.assertEqual(updated_project["name"], data["name"])
-        self.assertEqual(updated_project["description"], data["description"])
+            self.assertEqual(updated_project["name"], data["name"])
+            self.assertEqual(updated_project["description"], data["description"])
 
     def test_update_project_partial(self):
         """
@@ -158,10 +164,11 @@ class ProjectServiceTestCase(TestCase):
         """
         project_id = self.project1.project_id
 
-        ProjectService.delete_project(self.project1)
+        with self.assertNumQueries(5):
+            ProjectService.delete_project(self.project1)
 
-        with self.assertRaises(ObjectDoesNotExist):
-            Project.objects.get(project_id=project_id)
+            with self.assertRaises(ObjectDoesNotExist):
+                Project.objects.get(project_id=project_id)
 
     def test_delete_project_nonexistent(self):
         """
