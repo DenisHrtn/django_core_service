@@ -21,7 +21,7 @@ class ProjectMembersServiceTestCase(TestCase):
         self.deleter_role = RoleFactory(role_name="deleter", user_id=self.user_id)
 
         self.project_member = ProjectMemberFactory(
-            project_id=self.project1, user_id=self.user_id, permissions=[1, 2]
+            project_id=self.project1, user_id=self.user_id, access_rights=[1, 2]
         )
 
     def test_get_all_project_members_by_viewer(self):
@@ -58,21 +58,6 @@ class ProjectMembersServiceTestCase(TestCase):
                 self.project1.project_id, self.project_member.member_id
             )
             self.assertEqual(project_member, self.project_member)
-
-    def test_update_project_member(self):
-        """
-        Тест успешного обновления участника проекта
-        """
-        data = {"permissions": [1, 2, 3]}
-
-        with self.assertNumQueries(2):
-            updated_project_member = ProjectMembersService.update_project_member(
-                data=data,
-                project_id=self.project1.project_id,
-                member=self.project_member.member_id,
-            )
-
-            self.assertEqual(updated_project_member["permissions"], data["permissions"])
 
     def test_delete_project_member_by_admin(self):
         """

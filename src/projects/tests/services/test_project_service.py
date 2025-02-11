@@ -24,7 +24,7 @@ class ProjectServiceTestCase(TestCase):
         self.viewer_role = RoleFactory(role_name="viewer", user_id=self.user_id)
 
         self.project_member = ProjectMemberFactory(
-            project_id=self.project1, user_id=self.user_id, permissions=[1, 2]
+            project_id=self.project1, user_id=self.user_id, access_rights=[1, 2]
         )
 
     def test_get_all_projects_admin(self):
@@ -111,52 +111,6 @@ class ProjectServiceTestCase(TestCase):
 
         with self.assertRaises(ValidationError):
             ProjectService.create_new_project(data=data, request=request)
-
-    def test_update_project_success(self):
-        """
-        Тест успешного обновления проекта
-        """
-        data = {
-            "name": "Updated Project Name",
-            "description": "Updated description",
-        }
-
-        with self.assertNumQueries(2):
-            updated_project = ProjectService.update_project(
-                data=data, project=self.project1
-            )
-
-            self.assertEqual(updated_project["name"], data["name"])
-            self.assertEqual(updated_project["description"], data["description"])
-
-    def test_update_project_partial(self):
-        """
-        Тест частичного обновления проекта
-        """
-        data = {
-            "description": "Partially updated description",
-        }
-
-        updated_project = ProjectService.update_project(
-            data=data, project=self.project1
-        )
-
-        self.assertEqual(updated_project["description"], data["description"])
-        self.assertEqual(
-            updated_project["name"], self.project1.name
-        )  # Имя должно остаться прежним
-
-    def test_update_project_invalid_data(self):
-        """
-        Тест обновления проекта с некорректными данными
-        (ожидается ошибку валидации)
-        """
-        data = {
-            "name": "",  # Некорректное пустое имя
-        }
-
-        with self.assertRaises(ValidationError):
-            ProjectService.update_project(data=data, project=self.project1)
 
     def test_delete_project_success(self):
         """

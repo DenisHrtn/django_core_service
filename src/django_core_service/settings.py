@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 from typing import List
 
@@ -45,7 +46,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "common_services.middlewares.JWTAuthMiddleware",
 ]
 
 ROOT_URLCONF = "django_core_service.urls"
@@ -118,6 +118,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 HEALTH_CHECK = {"database": True}  # database check
 
+#  ***************ДЛЯ ЛОКАЛКИ**************
 # REDIS_HOST = 'localhost'
 # REDIS_PORT = '6379'
 # CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
@@ -135,13 +136,36 @@ CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ],
-# }
-#
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ("common_services.services.JWTAuthentication",),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "SIGNING_KEY": "BZdZBJCPXomiijXAbNqNrx0ihDBofzqH",
+    "ALGORITHM": "HS256",
+    "USER_ID_FIELD": "user_id",
+    "USER_ID_CLAIM": "user_id",
+}
+
 # SIMPLE_JWT = {
 #     "ALGORITHM": "HS256",
 #     "SIGNING_KEY": AUTH_SECRET_KEY,
 # }
+
+AWS_ACCESS_KEY_ID = "test"
+AWS_SECRET_ACCESS_KEY = "test"
+AWS_STORAGE_BUCKET_NAME = "my-bucket"
+AWS_S3_ENDPOINT_URL = "http://localhost:4566"
+AWS_S3_REGION_NAME = "us-east-1"
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "localhost"
+EMAIL_PORT = 4566
+EMAIL_USE_TLS = False
+EMAIL_HOST_USER = "test-access-key"
+EMAIL_HOST_PASSWORD = "test-secret-key"
+DEFAULT_FROM_EMAIL = "test@gmail.com"

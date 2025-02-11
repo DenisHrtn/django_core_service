@@ -16,5 +16,7 @@ class RoleFactory(DjangoModelFactory):
 
     role_name = factory.Faker("job")
     description = factory.Faker("sentence")
-    permissions = factory.LazyFunction(lambda: [random.randint(1, 5) for _ in range(2)])
+    access_rights = factory.LazyFunction(
+        lambda: [random.randint(1, 5) for _ in range(2)]
+    )
     user_id = factory.Sequence(lambda n: n + 1)

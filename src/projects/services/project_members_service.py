@@ -1,10 +1,9 @@
-from typing import Dict, List, Optional, Union
+from typing import List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound
 
 from projects.models import ProjectMember
-from projects.serializers.project_memebers_serializer import ProjectMemberSerializer
 
 
 class ProjectMembersService:
@@ -46,30 +45,6 @@ class ProjectMembersService:
             ).first()
         except ObjectDoesNotExist as exc:
             raise NotFound("Участник проекта не найден") from exc
-
-    @staticmethod
-    def update_project_member(
-        data: Dict[str, List[int]], member: int, project_id: int
-    ) -> Dict[str, Union[str, int]]:
-        """
-        Метод для обновления участника проекта.
-        Разрешено обновлять только поле permissions
-        :param data: dict
-        :param member: int
-        :param project_id: int
-        :return: updated project member
-        """
-        project_member = ProjectMember.objects.filter(
-            project_id=project_id, member_id=member
-        ).first()
-        serializer = ProjectMemberSerializer(
-            instance=project_member, data=data, partial=True
-        )
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return serializer.data
-
-        raise ValidationError(serializer.errors)
 
     @staticmethod
     def delete_project_member(member_id: int, project_id: int):

@@ -2,25 +2,25 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-class Permission(models.Model):
+class AccessRights(models.Model):
     """
     Модель для разрешений ролей
     """
 
     class TagsChoices(models.TextChoices):
-        CREATOR = "creator", _("Создание")
-        EDITOR = "editor", _("Редактирование")
+        CREATOR = "creator", _("Создатель")
+        EDITOR = "editor", _("Редактор")
         VIEWER = "viewer", _("Просмотр")
         DELETER = "deleter", _("Удаление")
-        ADMIN = "admin", _("Администрирование")
+        ADMIN = "admin", _("Администратор")
 
-    permission_id = models.BigAutoField(
+    access_right_id = models.BigAutoField(
         editable=False,
         primary_key=True,
         verbose_name=_("ID разрешения"),
     )
 
-    permission_name = models.CharField(
+    access_right_name = models.CharField(
         unique=True,
         max_length=255,
         help_text=_("Имя разрешения для роли пользователя"),

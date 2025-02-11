@@ -17,14 +17,14 @@ class ProjectMembersTestCase(APITestCase):
         self.user_id = 123
 
         self.project_member = ProjectMemberFactory(
-            project_id=self.project1, user_id=self.user_id, permissions=[1, 2]
+            project_id=self.project1, user_id=self.user_id, access_rights=[1, 2]
         )
 
         self.token = generate_jwt_token(
             user_id=self.user_id, role_name="admin", email="test@example.com"
         )
 
-        self.data = {"permissions": [1, 2, 3]}
+        self.data = {"access_rights": [1, 2, 3]}
 
     def test_project_member_list(self):
         """

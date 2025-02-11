@@ -65,15 +65,15 @@ class ProjectMemberPermissions(BasePermission):
     def _get_permissions(self, role_name):
         return (
             Role.objects.filter(role_name=role_name)
-            .values_list("permissions", flat=True)
+            .values_list("access_rights", flat=True)
             .first()
             or []
         )
 
     def _can_update(self, role_name):
-        permissions = self._get_permissions(role_name)
-        return 4 in permissions
+        access_rights = self._get_permissions(role_name)
+        return 4 in access_rights
 
     def _can_delete(self, role_name):
-        permissions = self._get_permissions(role_name)
-        return 5 in permissions
+        access_rights = self._get_permissions(role_name)
+        return 5 in access_rights

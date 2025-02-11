@@ -13,7 +13,7 @@ class TicketNotification(models.Model):
         verbose_name=_("ID уведомления"),
     )
 
-    ticket_id = models.ForeignKey(
+    ticket = models.ForeignKey(
         "tickets.Ticket",
         on_delete=models.CASCADE,
         null=False,

@@ -13,9 +13,9 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
         """
         Метод обновления участника проекта
         """
-        permissions = validated_data.get("permissions")
-        if permissions:
-            instance.permissions = permissions
+        access_rights = validated_data.get("access_rights")
+        if access_rights:
+            instance.access_rights = access_rights
 
         instance.save()
         return instance

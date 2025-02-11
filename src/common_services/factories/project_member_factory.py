@@ -18,4 +18,6 @@ class ProjectMemberFactory(DjangoModelFactory):
     project_id = factory.SubFactory(ProjectFactory)
     user_id = factory.Sequence(lambda n: n + 1)
     email = factory.Faker("email")
-    permissions = factory.LazyFunction(lambda: [random.randint(1, 5) for _ in range(3)])
+    access_rights = factory.LazyFunction(
+        lambda: [random.randint(1, 5) for _ in range(3)]
+    )

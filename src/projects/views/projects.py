@@ -1,3 +1,4 @@
+from rest_framework.exceptions import NotFound
 from rest_framework.mixins import (
     CreateModelMixin,
     DestroyModelMixin,
@@ -23,14 +24,25 @@ class ProjectReadOnlyViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet)
     serializer_class = ProjectSerializer
     permission_classes = [ProjectPermission]
 
+    def get_queryset(self):
+        return ProjectService.get_all_projects(
+            self.request.user_id, self.request.role_name
+        )
+
+    def get_object(self):
+        project_id = self.kwargs.get("pk")
+        try:
+            return ProjectService.get_project_by_id(project_id=project_id)
+        except Project.DoesNotExist as exc:
+            raise NotFound("Проект не найден") from exc
+
     def list(self, request, *args, **kwargs):
-        projects = ProjectService.get_all_projects(request.user_id, request.role_name)
+        projects = self.get_queryset()
         serializer = self.get_serializer(projects, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
-        project_id = kwargs.get("pk")
-        project = ProjectService.get_project_by_id(project_id=project_id)
+        project = self.get_object()
         serializer = self.get_serializer(project)
         return Response(serializer.data)
 
@@ -58,13 +70,21 @@ class ProjectUpdateViewSet(UpdateModelMixin, GenericViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [ProjectPermission]
 
+    def get_object(self):
+        project_id = self.kwargs.get("pk")
+        try:
+            return Project.objects.get(pk=project_id)
+        except Project.DoesNotExist as exc:
+            raise NotFound("Проект не найден") from exc
+
     def update(self, request, *args, **kwargs):
         project = self.get_object()
-        updated_project = ProjectService.update_project(request.data, project)
-        return Response(updated_project, status=200)
-
-    def partial_update(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+        serializer = self.get_serializer(
+            instance=project, data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=200)
 
 
 class ProjectDeleteViewSet(DestroyModelMixin, GenericViewSet):
@@ -74,6 +94,13 @@ class ProjectDeleteViewSet(DestroyModelMixin, GenericViewSet):
 
     queryset = Project.objects.all()
     permission_classes = [ProjectPermission]
+
+    def get_object(self):
+        project_id = self.kwargs.get("pk")
+        try:
+            return Project.objects.get(pk=project_id)
+        except Project.DoesNotExist as exc:
+            raise NotFound("Проект не найден") from exc
 
     def destroy(self, request, *args, **kwargs):
         project = self.get_object()

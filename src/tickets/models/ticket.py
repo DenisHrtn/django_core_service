@@ -36,7 +36,7 @@ class Ticket(models.Model):
     status = models.CharField(
         max_length=15,
         choices=StatusChoices.choices,
-        default=StatusChoices.IN_PROGRESS,
+        default=StatusChoices.TODO,
         help_text=_("Статус задачи"),
         verbose_name=_("Статус"),
     )

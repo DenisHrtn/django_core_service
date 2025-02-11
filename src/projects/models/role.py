@@ -26,7 +26,7 @@ class Role(models.Model):
         null=False, help_text=_("Описание роли"), verbose_name=_("Описание")
     )
 
-    permissions = ArrayField(
+    access_rights = ArrayField(
         models.IntegerField(),
         null=True,
         help_text=_("Разрешения для роли"),

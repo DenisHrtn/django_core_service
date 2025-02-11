@@ -26,10 +26,8 @@ class ProjectService:
         if role_name == "admin":
             return Project.objects.all()
 
-        return (
-            Project.objects.prefetch_related("projectmember_set")
-            .filter(projectmember__user_id=user_id)
-            .distinct()
+        return Project.objects.prefetch_related("projectmember_set").filter(
+            projectmember__user_id=user_id
         )
 
     @staticmethod
@@ -56,11 +54,15 @@ class ProjectService:
         """
         user_id, role_name, email = decode_jwt_token(request=request)
 
-        role_permissions = (
+        print("Data", role_name, user_id, email)
+
+        role_access_rights = (
             Role.objects.filter(role_name=role_name)
-            .values_list("permissions", flat=True)
+            .values_list("access_rights", flat=True)
             .first()
         )
+
+        print("Role", role_access_rights)
 
         with transaction.atomic():
             serializer = ProjectSerializer(data=data)
@@ -71,23 +73,10 @@ class ProjectService:
                 project_id=project,
                 user_id=user_id,
                 email=email,
-                permissions=role_permissions,
+                access_rights=role_access_rights,
             )
 
             return {"id": project.project_id, **serializer.data}
-
-    @staticmethod
-    def update_project(data, project: Project) -> Project:
-        """
-        Обновление проекта
-        :param data: dict
-        :param project: Project
-        :return: updated project
-        """
-        serializer = ProjectSerializer(instance=project, data=data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return serializer.data
 
     @staticmethod
     def delete_project(project: Project):

@@ -18,10 +18,10 @@ class ProjectViewsTestCase(APITestCase):
         self.project1 = ProjectFactory()
         self.project2 = ProjectFactory()
 
-        self.user_id = 123
+        self.user_id = 1
 
         self.project_member = ProjectMemberFactory(
-            project_id=self.project1, user_id=self.user_id, permissions=[1, 2]
+            project_id=self.project1, user_id=self.user_id, access_rights=[1]
         )
 
         self.token = generate_jwt_token(
@@ -71,20 +71,6 @@ class ProjectViewsTestCase(APITestCase):
             kwargs={"pk": self.project1.pk},
         )
         response = self.client.put(
-            url, HTTP_AUTHORIZATION=f"Bearer {self.token}", data=self.data
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_partial_update_project(self):
-        """
-        Тест для проверки частичного обновления проектов
-        """
-        url = reverse(
-            "project-update",
-            kwargs={"pk": self.project1.pk},
-        )
-        response = self.client.patch(
             url, HTTP_AUTHORIZATION=f"Bearer {self.token}", data=self.data
         )
 

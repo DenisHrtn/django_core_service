@@ -34,7 +34,7 @@ class ProjectMember(models.Model):
         verbose_name=_("Email"),
     )
 
-    permissions = ArrayField(
+    access_rights = ArrayField(
         models.IntegerField(),
         default=list,
         verbose_name=_("Разрешения"),

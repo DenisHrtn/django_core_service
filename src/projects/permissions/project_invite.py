@@ -1,19 +1,17 @@
 from rest_framework.permissions import BasePermission
 
 from common_services.utils.decode_jwt_token import decode_jwt_token
-from projects.models.project_member import ProjectMember
-from projects.models.role import Role
+from projects.models import Invite, ProjectMember, Role
 
 
-class ProjectPermission(BasePermission):
+class InvitePermission(BasePermission):
     """
-    Кастомный пермишен для проверки прав доступа к проектам.
+    Кастомный пермишен для проверки прав доступа к инвайтам.
     """
 
     def has_permission(self, request, view):
         """
         Проверка доступа на уровне запроса
-        (например, доступ к списку проектов).
         """
         user_id, role_name, _ = decode_jwt_token(request)
         request.user_id = user_id
@@ -32,9 +30,9 @@ class ProjectPermission(BasePermission):
 
         return True
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, obj: Invite):
         """
-        Проверка доступа на уровне объекта
+        Проверка доступа на уровне объекта (инвайта).
         """
         user_id = request.user_id
         role_name = request.role_name
@@ -49,9 +47,6 @@ class ProjectPermission(BasePermission):
         if not is_member:
             return False
 
-        if view.action in ["update", "partial_update"]:
-            return self._can_update(role_name)
-
         if view.action == "destroy":
             return self._can_delete(role_name)
 
@@ -59,15 +54,11 @@ class ProjectPermission(BasePermission):
 
     def _can_create(self, role_name):
         access_rights = self._get_permissions(role_name)
-        return 3 or 1 in access_rights
-
-    def _can_update(self, role_name):
-        access_rights = self._get_permissions(role_name)
-        return 4 or 1 in access_rights
+        return any(right in access_rights for right in [1, 3, 4])
 
     def _can_delete(self, role_name):
         access_rights = self._get_permissions(role_name)
-        return 5 or 1 in access_rights
+        return any(right in access_rights for right in [1, 4, 5])
 
     def _get_permissions(self, role_name):
         return (

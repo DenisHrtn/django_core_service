@@ -16,12 +16,11 @@ class Invite(models.Model):
 
     invite_id = models.BigAutoField(
         primary_key=True,
-        default=uuid.uuid4,
         editable=False,
         verbose_name=_("ID инвайта"),
     )
 
-    project_id = models.ForeignKey(
+    project = models.ForeignKey(
         "projects.Project",
         on_delete=models.CASCADE,
         related_name="invites",
@@ -29,7 +28,8 @@ class Invite(models.Model):
         verbose_name=_("Проект"),
     )
 
-    token = models.UUIDField(
+    token = models.CharField(
+        max_length=36,
         default=uuid.uuid4,
         unique=True,
         help_text=_("Специальный токен"),
