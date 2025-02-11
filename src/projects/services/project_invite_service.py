@@ -34,14 +34,14 @@ class ProjectInviteService:
         :return: list[Invite]
         """
         if role_name == "admin":
-            return Invite.objects.select_related("project_id").filter(
+            return Invite.objects.select_related("project").filter(
                 project_id=project_id
             )
 
-        project_id = ProjectMember.objects.filter(user_id=user_id).values_list(
-            "project_id"
+        project_ids = ProjectMember.objects.filter(user_id=user_id).values_list(
+            "project_id", flat=True
         )
-        invites = Invite.objects.filter(project_id=project_id)
+        invites = Invite.objects.filter(project_id__in=project_ids)
 
         return invites
 
@@ -89,11 +89,11 @@ class ProjectInviteService:
                 email=email, project=project, token=token
             )
 
-            return {"id": new_invite.invite_id}
+            return {"id": new_invite}
 
     @staticmethod
     def accept_invite(
-        token: uuid.UUID, invite_response: bool, request: HttpRequest
+        token: str, invite_response: bool, request: HttpRequest
     ) -> Dict[str, str]:
         """
         Метод для принятия инвайта.
@@ -112,8 +112,6 @@ class ProjectInviteService:
         )
 
         invite = Invite.objects.filter(email=email).first()
-
-        print("Token", type(token), "Invite token", type(invite.token))
 
         if not invite:
             raise ObjectDoesNotExist("Инвайта с таким ID не существует")
