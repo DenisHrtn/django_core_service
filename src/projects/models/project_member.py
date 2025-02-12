@@ -2,8 +2,10 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from common_services.mixins.audit_model_mixin import AuditMixin
 
-class ProjectMember(models.Model):
+
+class ProjectMember(AuditMixin, models.Model):
     """
     Модель для участника проекта
     """

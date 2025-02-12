@@ -54,15 +54,11 @@ class ProjectService:
         """
         user_id, role_name, email = decode_jwt_token(request=request)
 
-        print("Data", role_name, user_id, email)
-
         role_access_rights = (
             Role.objects.filter(role_name=role_name)
             .values_list("access_rights", flat=True)
             .first()
         )
-
-        print("Role", role_access_rights)
 
         with transaction.atomic():
             serializer = ProjectSerializer(data=data)

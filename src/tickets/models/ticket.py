@@ -2,8 +2,10 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from common_services.mixins.audit_model_mixin import AuditMixin
 
-class Ticket(models.Model):
+
+class Ticket(AuditMixin, models.Model):
     """
     Модель для задач
     """
@@ -41,6 +43,14 @@ class Ticket(models.Model):
         verbose_name=_("Статус"),
     )
 
+    project = models.ForeignKey(
+        "projects.Project",
+        on_delete=models.PROTECT,
+        related_name="tickets",
+        help_text=_("Проект"),
+        verbose_name=_("Проект"),
+    )
+
     creator = models.CharField(
         max_length=255,
         help_text=_("Почта создателя конкретной задачи"),
@@ -50,13 +60,13 @@ class Ticket(models.Model):
     assignee_ids = ArrayField(
         models.IntegerField(),
         null=True,
-        default=list,
+        default=list[int],
         help_text=_("Список ID пользователей, назначенных на задачу"),
         verbose_name=_("Назначенные пользователи"),
     )
 
     ticket_notifications = models.BooleanField(
-        default=True,
+        default=False,
         help_text=_("Нужны ли уведомления по задаче"),
         verbose_name=_("Уведомления"),
     )
@@ -66,16 +76,4 @@ class Ticket(models.Model):
         blank=True,
         help_text=_("Дедлайн выполнения задачи"),
         verbose_name=_("Крайний срок"),
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Дата создания"),
-        help_text=_("Дата и время создания задачи"),
-    )
-
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name=_("Дата обновления"),
-        help_text=_("Дата и время последнего обновления задачи"),
     )

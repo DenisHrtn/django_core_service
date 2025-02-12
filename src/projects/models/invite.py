@@ -3,8 +3,10 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from common_services.mixins.audit_model_mixin import AuditMixin
 
-class Invite(models.Model):
+
+class Invite(AuditMixin, models.Model):
     """
     Модель для инвайтов в проект пользователей
     """
@@ -48,10 +50,4 @@ class Invite(models.Model):
         default=StatusChoices.PENDING,
         verbose_name=_("Статус инвайта"),
         help_text=_("Статус приглашения: ожидает, принято, отклонено"),
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Дата создания"),
-        help_text=_("Дата и время создания инвайта"),
     )

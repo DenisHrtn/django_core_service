@@ -12,6 +12,12 @@ class ProjectMembersService:
     """
 
     @staticmethod
+    def is_project_member(project_id: int, user_id: int) -> bool:
+        return ProjectMember.objects.filter(
+            project_id=project_id, user_id=user_id
+        ).exists()
+
+    @staticmethod
     def get_project_members(project_id: int, role_name: str) -> List[ProjectMember]:
         """
         Метод для получения всех участников проекта

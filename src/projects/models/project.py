@@ -2,8 +2,10 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from common_services.mixins.audit_model_mixin import AuditMixin
 
-class Project(models.Model):
+
+class Project(AuditMixin, models.Model):
     """
     Модель для таблицы проектов
     """
@@ -34,18 +36,6 @@ class Project(models.Model):
         null=True,
         help_text=_("Описание проекта"),
         verbose_name=_("Описание"),
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Дата создания"),
-        help_text=_("Дата и время создания проекта"),
-    )
-
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name=_("Дата обновления"),
-        help_text=_("Дата и время последнего обновления проекта"),
     )
 
     def save(self, *args, **kwargs):

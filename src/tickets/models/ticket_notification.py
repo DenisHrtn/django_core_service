@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from common_services.mixins.audit_model_mixin import AuditMixin
 
-class TicketNotification(models.Model):
+
+class TicketNotification(AuditMixin, models.Model):
     """
     Модель уведомления для задачи
     """

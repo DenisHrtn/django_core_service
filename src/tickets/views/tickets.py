@@ -1,0 +1,158 @@
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.exceptions import NotFound
+from rest_framework.mixins import DestroyModelMixin, UpdateModelMixin
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
+
+from tickets.models import Ticket
+from tickets.permissions.tickets_permission import TicketPermission
+from tickets.serializers.ticket_serializer import (
+    AssigneeActionSerializer,
+    TicketSerializer,
+)
+from tickets.services.ticket_service import TicketService
+
+
+class TicketReadOnlyViewSet(GenericViewSet):
+    """
+    Ручка для GET-запросов по задачам
+    """
+
+    permission_classes = [TicketPermission]
+    serializer_class = TicketSerializer
+    queryset = Ticket.objects.all()
+
+    def get_queryset(self):
+        project_id = self.kwargs.get("project_id")
+
+        return TicketService.get_all_tickets(project_id=project_id)
+
+    def get_object(self):
+        project_id = self.kwargs.get("project_id")
+        ticket_id = self.kwargs.get("ticket_id")
+
+        try:
+            return TicketService.get_ticket_by_id(
+                project_id=project_id, ticket_id=ticket_id
+            )
+        except ObjectDoesNotExist as exc:
+            raise NotFound("Задача не найдена!") from exc
+
+    def list(self, request, *args, **kwargs):
+        tickets = self.get_queryset()
+        serializer = self.get_serializer(tickets, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        ticket = self.get_object()
+        serializer = self.get_serializer(ticket)
+        return Response(serializer.data)
+
+
+class TicketCreateViewSet(GenericViewSet):
+    """
+    Ручка для создания таски
+    """
+
+    permission_classes = [TicketPermission]
+    serializer_class = TicketSerializer
+
+    def create(self, request, *args, **kwargs):
+        project_id = kwargs.get("project_id")
+
+        ticket = TicketService.create_new_ticket(
+            project_id=project_id, data=request.data, request=request
+        )
+
+        serializer = self.get_serializer(ticket)
+        return Response(serializer.data, status=201)
+
+
+class AddAssigneeToTicketViewSet(GenericViewSet):
+    """
+    Ручка для добавления участника в задачу
+    """
+
+    permission_classes = [TicketPermission]
+    serializer_class = AssigneeActionSerializer
+    queryset = Ticket.objects.all()
+
+    def partial_update(self, request, *args, **kwargs):
+        ticket_id = kwargs.get("ticket_id")
+        project_id = kwargs.get("project_id")
+        user_id = request.data.get("user_id")
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        result = TicketService.add_assignee_to_ticket(
+            project_id=project_id, ticket_id=ticket_id, user_id=int(user_id)
+        )
+
+        return Response(result, status=200)
+
+
+class RemoveAssigneeFromTicketViewSet(GenericViewSet):
+    """
+    Ручка для удаления участника из задачи
+    """
+
+    permission_classes = [TicketPermission]
+    serializer_class = AssigneeActionSerializer
+    queryset = Ticket.objects.all()
+
+    def partial_update(self, request, *args, **kwargs):
+        ticket_id = kwargs.get("ticket_id")
+        project_id = kwargs.get("project_id")
+        user_id = request.data.get("user_id")
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        result = TicketService.remove_assignee_from_ticket(
+            project_id=project_id, ticket_id=ticket_id, user_id=int(user_id)
+        )
+
+        return Response(result, status=200)
+
+
+class UpdateTicketViewSet(UpdateModelMixin, GenericViewSet):
+    """
+    Ручка для обновления задач
+    """
+
+    permission_classes = [TicketPermission]
+    serializer_class = TicketSerializer
+    queryset = Ticket.objects.all()
+
+    def get_object(self):
+        project_id = self.kwargs.get("project_id")
+        ticket_id = self.kwargs.get("ticket_id")
+
+        try:
+            return TicketService.get_ticket_by_id(
+                project_id=project_id, ticket_id=ticket_id
+            )
+        except ObjectDoesNotExist as exc:
+            raise NotFound("Задача не найдена!") from exc
+
+
+class DeleteTicketViewSet(DestroyModelMixin, GenericViewSet):
+    """
+    Ручка для удаления задачи
+    """
+
+    permission_classes = [TicketPermission]
+    serializer_class = TicketSerializer
+    queryset = Ticket.objects.all()
+
+    def get_object(self):
+        project_id = self.kwargs.get("project_id")
+        ticket_id = self.kwargs.get("ticket_id")
+
+        try:
+            return TicketService.get_ticket_by_id(
+                project_id=project_id, ticket_id=ticket_id
+            )
+        except ObjectDoesNotExist as exc:
+            raise NotFound("Задача не найдена!") from exc
