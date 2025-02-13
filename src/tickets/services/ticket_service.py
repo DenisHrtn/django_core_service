@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Dict, List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,7 +10,7 @@ from common_services.utils.decode_jwt_token import decode_jwt_token
 from projects.models import ProjectMember
 from projects.services.project_members_service import ProjectMembersService
 from projects.services.project_service import ProjectService
-from tickets.models import Ticket
+from tickets.models import Ticket, TicketNotification
 from tickets.serializers.ticket_serializer import TicketSerializer
 
 
@@ -104,12 +105,26 @@ class TicketService:
                 "Пользователь не является участником данного проекта!"
             )
 
-        if user_id not in ticket.assignee_ids:
-            ticket.assignee_ids.append(user_id)
-            ticket.save(update_fields=["assignee_ids"])
-            return {"detail": f"Юзер с ID {user_id} был успешно добавлен в задачу!"}
+        project_member_email = ProjectMember.objects.get(
+            user_id=user_id, project_id=project_id
+        ).email
 
-        return {"detail": f"Юзер с ID {user_id} уже добавлен в задачу!"}
+        with transaction.atomic():
+            if user_id not in ticket.assignee_ids:
+                ticket.assignee_ids.append(user_id)
+                ticket.save(update_fields=["assignee_ids"])
+
+                notify_time = ticket.deadline - timedelta(hours=1)
+
+                TicketNotification.objects.create(
+                    ticket=ticket,
+                    assignee_email=project_member_email,
+                    notify_time=notify_time,
+                )
+
+                return {"detail": f"Юзер с ID {user_id} был успешно добавлен в задачу!"}
+
+            return {"detail": f"Юзер с ID {user_id} уже добавлен в задачу!"}
 
     @staticmethod
     def remove_assignee_from_ticket(

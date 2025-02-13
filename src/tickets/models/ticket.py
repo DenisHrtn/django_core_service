@@ -60,7 +60,7 @@ class Ticket(AuditMixin, models.Model):
     assignee_ids = ArrayField(
         models.IntegerField(),
         null=True,
-        default=list[int],
+        default=list,
         help_text=_("Список ID пользователей, назначенных на задачу"),
         verbose_name=_("Назначенные пользователи"),
     )

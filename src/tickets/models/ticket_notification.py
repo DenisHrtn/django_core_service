@@ -23,13 +23,19 @@ class TicketNotification(AuditMixin, models.Model):
         verbose_name=_("Задача"),
     )
 
-    user_id = models.IntegerField(
-        null=False,
-        help_text=_("Пользователь, которому отправится уведомление"),
-        verbose_name=_("Пользователь"),
+    assignee_email = models.EmailField(
+        default="",
+        help_text=_("Почта пользователя, которому отправится уведомление"),
+        verbose_name=_("Почта пользователя"),
     )
 
     notify_time = models.DateTimeField(
         help_text=_("Время отправки уведомления"),
         verbose_name=_("Время уведомления"),
+    )
+
+    sent = models.BooleanField(
+        default=False,
+        help_text=_("Статус уведомления (отправлено или нет)"),
+        verbose_name=_("Отправлено"),
     )

@@ -29,6 +29,7 @@ services:
     restart: always
     container_name: django
     volumes:
+      - ./src:/app/src
       - static_volume:/app/static
       - media_volume:/app/media
 
@@ -47,6 +48,8 @@ services:
     container_name: celery
     profiles:
       - celery
+    volumes:
+      - ./src:/app/src
 
   redis:
     image: redis:7.4.2
@@ -89,6 +92,21 @@ services:
       - "5432:5432"
     container_name: db_postgres
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin:/root/.pgadmin
+
   localstack:
     image: localstack/localstack:latest
     environment:
@@ -105,3 +123,4 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
+  pgadmin:
