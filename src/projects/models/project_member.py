@@ -21,12 +21,14 @@ class ProjectMember(AuditMixin, models.Model):
         on_delete=models.CASCADE,
         help_text=_("Проект, который относится к конкретному участнику"),
         verbose_name=_("Проект"),
+        db_index=True,
     )
 
     user_id = models.IntegerField(
         null=False,
         help_text=_("Пользователь, соотносящийся с участником"),
         verbose_name=_("ID пользователя"),
+        db_index=True,
     )
 
     email = models.EmailField(

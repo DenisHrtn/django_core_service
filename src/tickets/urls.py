@@ -18,7 +18,7 @@ urlpatterns = [
     path(
         "tickets/<int:project_id>/ticket/<int:ticket_id>/",
         TicketReadOnlyViewSet.as_view({"get": "retrieve"}),
-        name="tickets-retrieve",
+        name="tickets-detail",
     ),
     path(
         "tickets/<int:project_id>/ticket-create/",

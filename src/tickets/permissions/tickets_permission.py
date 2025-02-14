@@ -70,7 +70,7 @@ class TicketPermission(BasePermission):
 
     def _can_create(self, role_name):
         access_rights = self._get_permissions(role_name)
-        return 3 or 1 in access_rights
+        return any(right in access_rights for right in [3])
 
     def _can_update(self, user_id):
         is_assignee = Ticket.objects.filter(assignee_ids__contains=[user_id])

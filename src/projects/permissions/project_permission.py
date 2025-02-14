@@ -49,6 +49,9 @@ class ProjectPermission(BasePermission):
         if not is_member:
             return False
 
+        if view.action == "create":
+            return self._can_create(role_name)
+
         if view.action in ["update", "partial_update"]:
             return self._can_update(role_name)
 
@@ -59,15 +62,15 @@ class ProjectPermission(BasePermission):
 
     def _can_create(self, role_name):
         access_rights = self._get_permissions(role_name)
-        return 3 or 1 in access_rights
+        return 3 in access_rights
 
     def _can_update(self, role_name):
         access_rights = self._get_permissions(role_name)
-        return 4 or 1 in access_rights
+        return 4 in access_rights
 
     def _can_delete(self, role_name):
         access_rights = self._get_permissions(role_name)
-        return 5 or 1 in access_rights
+        return 5 in access_rights
 
     def _get_permissions(self, role_name):
         return (

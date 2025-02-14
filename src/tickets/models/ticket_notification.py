@@ -21,6 +21,7 @@ class TicketNotification(AuditMixin, models.Model):
         null=False,
         help_text=_("Задача, к которой привязано уведомление"),
         verbose_name=_("Задача"),
+        db_index=True,
     )
 
     assignee_email = models.EmailField(

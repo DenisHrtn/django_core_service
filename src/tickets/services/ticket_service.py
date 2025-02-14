@@ -54,7 +54,7 @@ class TicketService:
         project_id: int,
         data: Dict,
         request: HttpRequest,
-    ) -> Optional[Ticket]:  # TODO: решить баг с одинаковыми именами при создании тикета
+    ) -> Optional[Ticket]:
         """
         Создание таски
         :param project_id: int
@@ -62,7 +62,7 @@ class TicketService:
         :param request: HttpRequest
         :return: ticket
         """
-        user_id, _, email = decode_jwt_token(request)
+        user_id, role_name, email = decode_jwt_token(request)
 
         project = ProjectService.get_project_by_id(project_id=project_id)
 
@@ -70,7 +70,7 @@ class TicketService:
             user_id=user_id, project_id=project_id
         ).exists()
 
-        if not is_member:
+        if not (is_member or role_name == "admin"):
             raise PermissionDenied("Вы не являетесь участником этого проекта.")
 
         serializer = TicketSerializer(data=data)

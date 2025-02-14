@@ -25,7 +25,7 @@ def send_ticket_notification():
             send_email_via_ses.apply_async(
                 args=[
                     f"Напоминание о задаче: {notification.ticket.title}",
-                    f"У вас есть задача с дедлайном: {notification.ticket.deadline}.",
+                    f"У вас есть задача с дедлайном: {notification.ticket.due_date}.",
                     notification.assignee_email,
                 ]
             )

@@ -13,7 +13,7 @@ SECRET_KEY = "BZdZBJCPXomiijXAbNqNrx0ihDBofzqH"
 ALGORITHM = "HS256"
 
 
-def generate_jwt_token(user_id=2, role_name="creator", email="test@gmail.com"):
+def generate_jwt_token(user_id=1, role_name="admin", email="test@gmail.com"):
     token = AccessToken()
     token["user_id"] = user_id
     token["role_name"] = role_name

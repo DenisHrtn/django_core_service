@@ -24,7 +24,7 @@ class Ticket(AuditMixin, models.Model):
 
     title = models.CharField(
         max_length=255,
-        unique=True,
+        db_index=True,
         help_text=_("Название задачи"),
         verbose_name=_("Заголовок"),
     )
@@ -41,6 +41,7 @@ class Ticket(AuditMixin, models.Model):
         default=StatusChoices.TODO,
         help_text=_("Статус задачи"),
         verbose_name=_("Статус"),
+        db_index=True,
     )
 
     project = models.ForeignKey(
@@ -49,9 +50,10 @@ class Ticket(AuditMixin, models.Model):
         related_name="tickets",
         help_text=_("Проект"),
         verbose_name=_("Проект"),
+        db_index=True,
     )
 
-    creator = models.CharField(
+    creator = models.EmailField(
         max_length=255,
         help_text=_("Почта создателя конкретной задачи"),
         verbose_name=_("Создатель"),
@@ -76,4 +78,5 @@ class Ticket(AuditMixin, models.Model):
         blank=True,
         help_text=_("Дедлайн выполнения задачи"),
         verbose_name=_("Крайний срок"),
+        db_index=True,
     )

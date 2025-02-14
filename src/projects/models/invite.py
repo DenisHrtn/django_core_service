@@ -28,6 +28,7 @@ class Invite(AuditMixin, models.Model):
         related_name="invites",
         help_text=_("Проект"),
         verbose_name=_("Проект"),
+        db_index=True,
     )
 
     token = models.CharField(

@@ -1,5 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.functions.text import Lower
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import NotFound
+from rest_framework.filters import OrderingFilter
 from rest_framework.mixins import (
     DestroyModelMixin,
     ListModelMixin,
@@ -9,6 +12,7 @@ from rest_framework.mixins import (
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from tickets.filters.tickets_filter import TicketFilter
 from tickets.models import Ticket
 from tickets.permissions.tickets_permission import TicketPermission
 from tickets.serializers.ticket_serializer import (
@@ -21,16 +25,26 @@ from tickets.services.ticket_service import TicketService
 class TicketReadOnlyViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """
     Ручка для GET-запросов по задачам
+
+    Сортировка:
+        1. Чтобы отсортировать по названию (по убыванию):
+        http://127.0.0.1:8000/api/tickets/tickets/10/?ordering=-title_lower
     """
 
     permission_classes = [TicketPermission]
     serializer_class = TicketSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     queryset = Ticket.objects.all()
+    filterset_class = TicketFilter
+    ordering_fields = ["created_at", "title"]
+    ordering = ["-created_at"]
 
     def get_queryset(self):
         project_id = self.kwargs.get("project_id")
 
-        return TicketService.get_all_tickets(project_id=project_id)
+        return TicketService.get_all_tickets(project_id=project_id).annotate(
+            title_lower=Lower("title")
+        )
 
     def get_object(self):
         project_id = self.kwargs.get("project_id")
