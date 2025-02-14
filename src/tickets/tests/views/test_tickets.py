@@ -6,7 +6,7 @@ from common_services.factories import ProjectFactory, TicketFactory
 from common_services.utils.generate_jwt_token import generate_jwt_token
 
 
-class TicketTestCase(APITestCase):  # TODO: фиксануть логику с пермишенами
+class TicketTestCase(APITestCase):
     """
     Тест-кейс для тестирования ручек тикетов
     """

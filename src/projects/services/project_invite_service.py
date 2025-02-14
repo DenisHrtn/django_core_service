@@ -70,8 +70,7 @@ class ProjectInviteService:
         :return: new invite
         """
         email = data["email"]
-
-        token = ProjectInviteService.generate_invite_token()
+        token = str(ProjectInviteService.generate_invite_token())
 
         if Invite.objects.filter(email=email).exists():
             raise ValidationError("Приглашение для такого email уже существует!")
@@ -89,7 +88,7 @@ class ProjectInviteService:
                 email=email, project=project, token=token
             )
 
-            return {"id": new_invite}
+            return {"id": new_invite.invite_id}
 
     @staticmethod
     def accept_invite(

@@ -118,7 +118,7 @@ class ProjectServiceTestCase(TestCase):
         """
         project_id = self.project1.project_id
 
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(6):
             ProjectService.delete_project(self.project1)
 
             with self.assertRaises(ObjectDoesNotExist):

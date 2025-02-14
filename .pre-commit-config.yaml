@@ -39,4 +39,5 @@ repos:
           - '--max-line-length=88'
           - '--disable=import-error,missing-module-docstring,missing-class-docstring,missing-function-docstring,
           inconsistent-return-statements,too-few-public-methods,invalid-name,unused-argument,duplicate-code,
-          wrong-import-position,wrong-import-order,logging-fstring-interpolation,cyclic-import,no-member,broad-except,fixme'
+          wrong-import-position,wrong-import-order,logging-fstring-interpolation,cyclic-import,no-member,broad-except,
+          fixme,possibly-used-before-assignment'

@@ -105,16 +105,17 @@ class TicketService:
                 "Пользователь не является участником данного проекта!"
             )
 
-        project_member_email = ProjectMember.objects.get(
-            user_id=user_id, project_id=project_id
-        ).email
+        project_members = ProjectMember.objects.filter(project_id=project_id)
+
+        project_member = project_members.get(user_id=user_id)
+        project_member_email = project_member.email
 
         with transaction.atomic():
             if user_id not in ticket.assignee_ids:
                 ticket.assignee_ids.append(user_id)
                 ticket.save(update_fields=["assignee_ids"])
 
-                notify_time = ticket.deadline - timedelta(hours=1)
+                notify_time = ticket.due_date - timedelta(hours=1)
 
                 TicketNotification.objects.create(
                     ticket=ticket,
