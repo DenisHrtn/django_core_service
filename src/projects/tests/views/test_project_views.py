@@ -84,3 +84,12 @@ class ProjectViewsTestCase(APITestCase):
         response = self.client.delete(url, HTTP_AUTHORIZATION=f"Bearer {self.token}")
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_get_all_projects_with_tasks(self):
+        """
+        Тест для проверки получения проектов с их задачами
+        """
+        url = reverse("projects-tasks-list")
+        response = self.client.get(url, HTTP_AUTHORIZATION=f"Bearer {self.token}")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

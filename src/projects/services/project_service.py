@@ -2,12 +2,14 @@ from typing import Dict, List, Optional, Union
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+from django.db.models import Prefetch
 from django.http import HttpRequest
 from rest_framework.exceptions import NotFound
 
 from common_services.utils.decode_jwt_token import decode_jwt_token
 from projects.models import Project, ProjectMember, Role
 from projects.serializers.project_serializer import ProjectSerializer
+from tickets.models import Ticket
 
 
 class ProjectService:
@@ -85,3 +87,39 @@ class ProjectService:
             project.delete()
             return {"detail": "Проект успешно удален"}
         raise ObjectDoesNotExist("Проект не найден")
+
+    @staticmethod
+    def get_all_projects_with_tasks(
+        request: HttpRequest,
+    ) -> List[Dict[Project, Ticket]]:
+        """
+        Метод для получения всех проектов и их тасок
+        :param request: HttpRequest
+        :return: list of projects with tasks
+        """
+        user_id, role_name, _ = decode_jwt_token(request=request)
+
+        if role_name == "admin":
+            projects = Project.objects.prefetch_related(
+                Prefetch(
+                    "tickets",
+                    queryset=Ticket.objects.select_related("project").only(
+                        "ticket_id", "title", "status", "project_id"
+                    ),
+                )
+            )
+
+            return projects
+
+        return Project.objects.filter(
+            project_id__in=ProjectMember.objects.filter(user_id=user_id).values(
+                "project_id"
+            )
+        ).prefetch_related(
+            Prefetch(
+                "tickets",
+                queryset=Ticket.objects.only(
+                    "ticket_id", "title", "status", "project_id"
+                ),
+            )
+        )

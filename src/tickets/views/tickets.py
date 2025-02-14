@@ -1,6 +1,11 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import NotFound
-from rest_framework.mixins import DestroyModelMixin, UpdateModelMixin
+from rest_framework.mixins import (
+    DestroyModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -13,7 +18,7 @@ from tickets.serializers.ticket_serializer import (
 from tickets.services.ticket_service import TicketService
 
 
-class TicketReadOnlyViewSet(GenericViewSet):
+class TicketReadOnlyViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """
     Ручка для GET-запросов по задачам
     """
@@ -37,16 +42,6 @@ class TicketReadOnlyViewSet(GenericViewSet):
             )
         except ObjectDoesNotExist as exc:
             raise NotFound("Задача не найдена!") from exc
-
-    def list(self, request, *args, **kwargs):
-        tickets = self.get_queryset()
-        serializer = self.get_serializer(tickets, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, *args, **kwargs):
-        ticket = self.get_object()
-        serializer = self.get_serializer(ticket)
-        return Response(serializer.data)
 
 
 class TicketCreateViewSet(GenericViewSet):

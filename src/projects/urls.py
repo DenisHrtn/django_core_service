@@ -16,6 +16,7 @@ from .views.projects import (
     ProjectDeleteViewSet,
     ProjectReadOnlyViewSet,
     ProjectUpdateViewSet,
+    ProjectWithTasksViewSet,
 )
 
 router = DefaultRouter()
@@ -23,9 +24,9 @@ router.register(r"projects", ProjectReadOnlyViewSet, basename="projects")
 
 urlpatterns = [
     path(
-        "projects/create/",
+        "projects/projects-create/",
         ProjectCreateViewSet.as_view({"post": "create"}),
-        name="project-create",
+        name="projects-create",
     ),
     path(
         "projects/<int:pk>/update/",
@@ -76,6 +77,11 @@ urlpatterns = [
         "projects/<int:project_id>/invite-accept/",
         ProjectInviteAcceptViewSet.as_view({"patch": "partial_update"}),
         name="project-invites-accept",
+    ),
+    path(
+        "projects/projects-tasks/",
+        ProjectWithTasksViewSet.as_view({"get": "list"}),
+        name="projects-tasks-list",
     ),
 ]
 

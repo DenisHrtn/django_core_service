@@ -1,6 +1,6 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import NotFound
 from rest_framework.mixins import (
-    CreateModelMixin,
     DestroyModelMixin,
     ListModelMixin,
     RetrieveModelMixin,
@@ -11,7 +11,10 @@ from rest_framework.viewsets import GenericViewSet
 
 from projects.models import Project
 from projects.permissions.project_permission import ProjectPermission
-from projects.serializers.project_serializer import ProjectSerializer
+from projects.serializers.project_serializer import (
+    ProjectSerializer,
+    ProjectsTicketsSerializer,
+)
 from projects.services.project_service import ProjectService
 
 
@@ -36,18 +39,8 @@ class ProjectReadOnlyViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet)
         except Project.DoesNotExist as exc:
             raise NotFound("Проект не найден") from exc
 
-    def list(self, request, *args, **kwargs):
-        projects = self.get_queryset()
-        serializer = self.get_serializer(projects, many=True)
-        return Response(serializer.data)
 
-    def retrieve(self, request, *args, **kwargs):
-        project = self.get_object()
-        serializer = self.get_serializer(project)
-        return Response(serializer.data)
-
-
-class ProjectCreateViewSet(CreateModelMixin, GenericViewSet):
+class ProjectCreateViewSet(GenericViewSet):
     """
     ViewSet для создания проектов.
     """
@@ -106,3 +99,18 @@ class ProjectDeleteViewSet(DestroyModelMixin, GenericViewSet):
         project = self.get_object()
         deleted_project = ProjectService.delete_project(project)
         return Response(deleted_project, status=204)
+
+
+class ProjectWithTasksViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """
+    Ручка для получения проектов с их задачами
+    """
+
+    serializer_class = ProjectsTicketsSerializer
+    permission_classes = [ProjectPermission]
+
+    def get_queryset(self):
+        try:
+            return ProjectService.get_all_projects_with_tasks(request=self.request)
+        except ObjectDoesNotExist as exc:
+            raise NotFound("Не найдены проекты с задачами") from exc

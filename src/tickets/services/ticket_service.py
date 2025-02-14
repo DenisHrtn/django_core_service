@@ -54,7 +54,7 @@ class TicketService:
         project_id: int,
         data: Dict,
         request: HttpRequest,
-    ) -> Optional[Ticket]:
+    ) -> Optional[Ticket]:  # TODO: решить баг с одинаковыми именами при создании тикета
         """
         Создание таски
         :param project_id: int

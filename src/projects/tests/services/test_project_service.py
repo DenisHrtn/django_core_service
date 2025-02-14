@@ -131,3 +131,18 @@ class ProjectServiceTestCase(TestCase):
         fake_project = Project(project_id=9999)
         with self.assertRaises(ObjectDoesNotExist):
             ProjectService.delete_project(fake_project)
+
+    def test_get_projects_with_tasks(self):
+        """
+        Тест получения всех проектов с тасками
+        """
+        token = generate_jwt_token(
+            user_id=self.user_id, role_name="admin", email="test@example.com"
+        )
+        request = MagicMock()
+        request.headers = {"Authorization": f"Bearer {token}"}
+
+        with self.assertNumQueries(1):
+            projects_tasks = ProjectService.get_all_projects_with_tasks(request=request)
+
+            self.assertEqual(projects_tasks.count(), 2)

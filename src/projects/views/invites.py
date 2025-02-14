@@ -42,16 +42,6 @@ class ProjectInviteReadOnlyViewSet(ListModelMixin, RetrieveModelMixin, GenericVi
         except ObjectDoesNotExist as exc:
             raise NotFound("Инвайт не найден") from exc
 
-    def list(self, request, *args, **kwargs):
-        invites = self.get_queryset()
-        serializer = self.get_serializer(invites, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, *args, **kwargs):
-        invite = self.get_object()
-        serializer = self.get_serializer(invite)
-        return Response(serializer.data)
-
 
 class ProjectInviteCrateViewSet(CreateModelMixin, GenericViewSet):
     """
