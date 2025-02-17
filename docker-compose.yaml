@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  django:
+    build: .
+    command: /app/entrypoint.sh
+    env_file:
+      - .env
+    environment: &anchor_pointer
+      POSTGRES_HOST: db
+      REDIS: redis
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      AWS_ACCESS_KEY_ID: "test-access-key"
+      AWS_SECRET_ACCESS_KEY: "test-secret-key"
+      AWS_REGION: "us-east-1"
+      AWS_ENDPOINT_URL: "http://localstack:4566"
+    depends_on:
+      - redis
+      - db
+      - localstack
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: curl --fail http://localhost:8000/health/ || exit 1
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    restart: always
+    container_name: django
+    volumes:
+      - ./src:/app/src
+      - static_volume:/app/static
+      - media_volume:/app/media
+      - ./static:/app/static
+      - ./staticfiles:/app/staticfiles
+
+  celery:
+    build: .
+    command: /app/entrypoint-celery.sh
+    env_file:
+      - .env
+    environment:
+      <<: *anchor_pointer
+    depends_on:
+      - db
+      - redis
+      - django
+      - localstack
+    container_name: celery
+    profiles:
+      - celery
+    volumes:
+      - ./src:/app/src
+
+  redis:
+    image: redis:7.4.2
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env
+    container_name: redis
+    profiles:
+      - redis
+
+  flower:
+    build:
+      context: .
+    command: celery -A django_core_service flower --port=5555 --broker=redis://redis/0 --basic-auth=admin@gmail.com:admin
+    restart: always
+    image: flower
+    container_name: flower
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+    ports:
+      - "5555:5555"
+    depends_on:
+      - celery
+      - redis
+    profiles:
+      - celery
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    container_name: db_postgres
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin:/root/.pgadmin
+
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    container_name: localstack
+    restart: always
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  pgadmin:

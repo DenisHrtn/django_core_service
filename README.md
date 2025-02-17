@@ -33,7 +33,7 @@ TODO - это веб-приложение, предназначенное для
    ```bash
    poetry install
 
-4. Настройте переменный окружения в файле .env
+4. Настройте переменный окружения в файле .env(пример есть также в .env.example)
    ```bash
    DJANGO_SECRET_KEY=""
    DJANGO_DEBUG=""
@@ -45,3 +45,15 @@ TODO - это веб-приложение, предназначенное для
    DB_PORT=""
 
    PYTHONPATH=""
+
+### Шаги для поднятия проекта с помощью Docker
+1. Запустите Docker Desktop 
+2. Находясь в корне проекта выполните команду для сборки и автоматического поднятия сервисов
+   ```bash
+   docker-compose up --build
+   или 
+   docker-compose build
+   docker-compose up
+3. Для остановки работы контейнеров:
+   ```bash
+   docker-compose down

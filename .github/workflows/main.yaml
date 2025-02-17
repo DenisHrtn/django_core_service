@@ -13,6 +13,16 @@ jobs:
   linter:
     runs-on: ubuntu-latest
 
+    env:
+      django_secret_key: ${{ secrets.DJANGO_SECRET_KEY }}
+      django_debug: ${{ secrets.DJANGO_DEBUG }}
+      db_name: ${{ secrets.DB_NAME }}
+      db_user: ${{ secrets.DB_USER }}
+      db_password: ${{ secrets.DB_PASSWORD }}
+      db_host: ${{ secrets.DB_HOST }}
+      db_port: ${{ secrets.DB_PORT }}
+      pythonpath: ${{ secrets.PYTHONPATH }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
