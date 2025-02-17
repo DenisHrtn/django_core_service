@@ -27,12 +27,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "drf_yasg",
     "health_check",
     "health_check.db",
     "health_check.storage",
     "django_celery_results",
     "django_celery_beat",
-    "drf_yasg",
     "projects.apps.ProjectsConfig",
     "tickets.apps.TicketsConfig",
     "common_services.apps.CommonServicesConfig",
@@ -112,7 +112,11 @@ TIME_ZONE = "UTC"
 
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

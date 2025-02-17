@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from celery import shared_task
@@ -9,12 +8,8 @@ from common_services.services.email_service import send_email_via_ses
 logger = logging.getLogger(__name__)
 
 
-@shared_task()
-def send_invite_token_to_email(
-    to_address: str,
-    token: str,
-    project_name: str,
-) -> None:
+@shared_task
+def send_invite_token_to_email(to_address: str, token: str, project_name: str) -> None:
     """
     Таска для отправки письма с токеном для приглашения
     """
@@ -30,12 +25,10 @@ def send_invite_token_to_email(
             f"С уважением,\nКоманда проекта"
         )
 
-        asyncio.run(
-            send_email_via_ses(
-                subject="Вас пригласили участником в проект!",
-                body=body,
-                to_address=to_address,
-            )
+        send_email_via_ses(
+            subject="Вас пригласили участником в проект!",
+            body=body,
+            to_address=to_address,
         )
 
         logger.info(f"Письмо с приглашением успешно отправлено на {to_address}")
