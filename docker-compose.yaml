@@ -126,3 +126,7 @@ volumes:
   static_volume:
   media_volume:
   pgadmin:
+
+networks:
+  service_network:
+    external: true
