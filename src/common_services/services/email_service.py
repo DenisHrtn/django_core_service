@@ -17,6 +17,8 @@ def send_email_via_ses(subject, body, to_address):
         aws_access_key_id="test-access-key",
     )
 
+    client.verify_email_identity(EmailAddress="test@gmail.com")
+
     try:
         response = client.send_email(
             Source="test@gmail.com",
