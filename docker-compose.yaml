@@ -8,14 +8,13 @@ services:
       - .env
     environment: &anchor_pointer
       POSTGRES_HOST: db
-      REDIS: redis
+      REDIS: redis://redis_fastapi:6379/0
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       AWS_ACCESS_KEY_ID: "test-access-key"
       AWS_SECRET_ACCESS_KEY: "test-secret-key"
       AWS_REGION: "us-east-1"
       AWS_ENDPOINT_URL: "http://localstack:4566"
     depends_on:
-      - redis
       - db
       - localstack
     ports:
@@ -44,7 +43,6 @@ services:
       <<: *anchor_pointer
     depends_on:
       - db
-      - redis
       - django
       - localstack
     container_name: celery
@@ -53,20 +51,10 @@ services:
     volumes:
       - ./src:/app/src
 
-  redis:
-    image: redis:7.4.2
-    ports:
-      - "6379:6379"
-    env_file:
-      - .env
-    container_name: redis
-    profiles:
-      - redis
-
   flower:
     build:
       context: .
-    command: celery -A django_core_service flower --port=5555 --broker=redis://redis/0 --basic-auth=admin@gmail.com:admin
+    command: celery -A django_core_service flower --port=5555 --broker=redis://redis_fastapi:6379/0 --basic-auth=admin@gmail.com:admin
     restart: always
     image: flower
     container_name: flower
@@ -76,7 +64,6 @@ services:
       - "5555:5555"
     depends_on:
       - celery
-      - redis
     profiles:
       - celery
 
@@ -94,16 +81,16 @@ services:
       - "5432:5432"
     container_name: db_postgres
 
-  pgadmin:
+  pgadmin_core:
     image: dpage/pgadmin4
-    container_name: pgadmin
+    container_name: pgadmin_core
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@gmail.com
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_LISTEN_PORT: 80
     ports:
-      - "8080:80"
+      - "8090:80"
     depends_on:
       - db
     volumes:
@@ -115,7 +102,6 @@ services:
       - DOCKER_HOST=unix:///var/run/docker.sock
     ports:
       - "4566:4566"
-      - "4510-4559:4510-4559"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     container_name: localstack

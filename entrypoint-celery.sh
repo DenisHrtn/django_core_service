@@ -6,5 +6,8 @@ while ! nc -z db 5432; do
 done
 
 echo "Starting Celery..."
+
+export BROKER_URL=redis://redis_fastapi:6379/0
+
 exec poetry run celery -A django_core_service worker --loglevel=info &
-           poetry run celery -A django_core_service beat --loglevel=info
+poetry run celery -A django_core_service beat --loglevel=info
