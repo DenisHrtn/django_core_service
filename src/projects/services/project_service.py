@@ -67,14 +67,18 @@ class ProjectService:
             serializer.is_valid(raise_exception=True)
             project = serializer.save()
 
-            ProjectMember.objects.create(
+            project_member = ProjectMember.objects.create(
                 project_id=project,
                 user_id=user_id,
                 email=email,
                 access_rights=role_access_rights,
             )
 
-            return {"id": project.project_id, **serializer.data}
+            return {
+                "id": project.project_id,
+                "member_id": project_member.user_id,
+                **serializer.data,
+            }
 
     @staticmethod
     def delete_project(project: Project):

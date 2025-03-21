@@ -21,14 +21,14 @@ class TokenMiddleware:
 
     def __call__(self, request):
         token = request.headers.get("Authorization")
+        token = token.split(" ")[1]
+        print(token)
         if not token:
             return JsonResponse(
                 {"error": "Token is missing in the request header"}, status=400
             )
 
-        redis_token = redis_client.get(token)
-
-        if not redis_token:
+        if not redis_client.exists(f"token:{token}"):
             return JsonResponse({"error": "Token is invalid or expired"}, status=401)
 
         response = self.get_response(request)
