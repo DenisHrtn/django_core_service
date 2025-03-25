@@ -9,6 +9,8 @@ app = Celery("django_core_service")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
+app.conf.task_default_queue = "core_queue"
+
 app.conf.beat_schedule = {
     "send-ticket-notifications-every-minute": {
         "task": "tickets.tasks.send_ticket_notification",

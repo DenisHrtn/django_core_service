@@ -8,14 +8,13 @@ services:
       - .env
     environment: &anchor_pointer
       POSTGRES_HOST: db
-      REDIS: redis
+      REDIS: redis://redis_fastapi:6379/0
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       AWS_ACCESS_KEY_ID: "test-access-key"
       AWS_SECRET_ACCESS_KEY: "test-secret-key"
       AWS_REGION: "us-east-1"
       AWS_ENDPOINT_URL: "http://localstack:4566"
     depends_on:
-      - redis
       - db
       - localstack
     ports:
@@ -44,7 +43,6 @@ services:
       <<: *anchor_pointer
     depends_on:
       - db
-      - redis
       - django
       - localstack
     container_name: celery
@@ -53,20 +51,10 @@ services:
     volumes:
       - ./src:/app/src
 
-  redis:
-    image: redis:7.4.2
-    ports:
-      - "6379:6379"
-    env_file:
-      - .env
-    container_name: redis
-    profiles:
-      - redis
-
   flower:
     build:
       context: .
-    command: celery -A django_core_service flower --port=5555 --broker=redis://redis/0 --basic-auth=admin@gmail.com:admin
+    command: celery -A django_core_service flower --port=5555 --broker=redis://redis_fastapi:6379/0 --basic-auth=admin@gmail.com:admin
     restart: always
     image: flower
     container_name: flower
@@ -76,7 +64,6 @@ services:
       - "5555:5555"
     depends_on:
       - celery
-      - redis
     profiles:
       - celery
 
@@ -94,16 +81,16 @@ services:
       - "5432:5432"
     container_name: db_postgres
 
-  pgadmin:
+  pgadmin_core:
     image: dpage/pgadmin4
-    container_name: pgadmin
+    container_name: pgadmin_core
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@gmail.com
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_LISTEN_PORT: 80
     ports:
-      - "8080:80"
+      - "8090:80"
     depends_on:
       - db
     volumes:
@@ -115,17 +102,75 @@ services:
       - DOCKER_HOST=unix:///var/run/docker.sock
     ports:
       - "4566:4566"
-      - "4510-4559:4510-4559"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     container_name: localstack
     restart: always
+
+  zookeeper:
+    container_name: zookeeper
+    image: bitnami/zookeeper:3.9
+    restart: on-failure
+    ports:
+      - ${ZOOKEEPER_PORT_LOCAL}:${ZOOKEEPER_PORT}
+    volumes:
+      - zookeeper_data:/bitnami
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    networks:
+      - service_network
+
+  kafka:
+    container_name: kafka
+    image: bitnami/kafka:3.4
+    restart: on-failure
+    ports:
+      - ${KAFKA_PORT_LOCAL}:${KAFKA_PORT}
+    volumes:
+      - kafka_data:/bitnami
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://kafka:9092
+      KAFKA_LISTENERS: INTERNAL://:29092,EXTERNAL://:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+    depends_on:
+      - zookeeper
+    networks:
+      - service_network
+
+  kowl:
+    container_name: kowl
+    image: quay.io/cloudhut/kowl:v1.4.0
+    restart: on-failure
+    volumes:
+      - ./kowl:/etc/kowl/
+    ports:
+      - ${KOWL_PORT_LOCAL}:${KOWL_PORT}
+    entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
+    depends_on:
+      - kafka
+    networks:
+      - service_network
 
 volumes:
   postgres_data:
   static_volume:
   media_volume:
   pgadmin:
+  kafka_data:
+  zookeeper_data:
 
 networks:
   service_network:
