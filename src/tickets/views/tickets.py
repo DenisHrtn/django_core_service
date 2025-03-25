@@ -12,6 +12,7 @@ from rest_framework.mixins import (
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from common_services.kafka.event_driver import EventDriver
 from tickets.filters.tickets_filter import TicketFilter
 from tickets.models import Ticket
 from tickets.permissions.tickets_permission import TicketPermission
@@ -71,6 +72,15 @@ class TicketCreateViewSet(GenericViewSet):
 
         ticket = TicketService.create_new_ticket(
             project_id=project_id, data=request.data, request=request
+        )
+
+        EventDriver.send_ticket_event(
+            ticket_id=ticket.ticket_id,
+            project_id=ticket.project.project_id,
+            status=ticket.status,
+            creator=ticket.creator,
+            assignee_ids=ticket.assignee_ids,
+            due_date=ticket.due_date,
         )
 
         serializer = self.get_serializer(ticket)

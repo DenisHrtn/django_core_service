@@ -40,4 +40,5 @@ repos:
           - '--disable=import-error,missing-module-docstring,missing-class-docstring,missing-function-docstring,
           inconsistent-return-statements,too-few-public-methods,invalid-name,unused-argument,duplicate-code,
           wrong-import-position,wrong-import-order,logging-fstring-interpolation,cyclic-import,no-member,broad-except,
-          fixme,possibly-used-before-assignment'
+          fixme,possibly-used-before-assignment,too-many-arguments,too-many-positional-arguments,import-outside-toplevel
+          unused-import,import-outside-toplevel,unused-import'

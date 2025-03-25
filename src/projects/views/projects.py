@@ -9,6 +9,7 @@ from rest_framework.mixins import (
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from common_services.kafka.event_driver import EventDriver
 from projects.models import Project
 from projects.permissions.project_permission import ProjectPermission
 from projects.serializers.project_serializer import (
@@ -51,6 +52,19 @@ class ProjectCreateViewSet(GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         project = ProjectService.create_new_project(request=request, data=request.data)
+
+        EventDriver.send_project_event(
+            project_id=project["project_id"],
+            owner_id=project["member_id"],
+            created_at=project["created_at"],
+            updated_at=project["updated_at"],
+        )
+
+        EventDriver.send_project_member_event(
+            project_id=project["project_id"],
+            user_id=project["member_id"],
+        )
+
         return Response(project, status=201)
 
 
@@ -77,6 +91,7 @@ class ProjectUpdateViewSet(UpdateModelMixin, GenericViewSet):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
         return Response(serializer.data, status=200)
 
 
