@@ -46,6 +46,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "common_services.middlewares.TokenMiddleware",
 ]
 
 ROOT_URLCONF = "django_core_service.urls"
@@ -132,10 +133,11 @@ HEALTH_CHECK = {"database": True}  # database check
 # CELERY_TASK_SERIALIZER = "json"
 # CELERY_RESULT_SERIALIZER = "json"
 
-REDIS_HOST = "redis"
-REDIS_PORT = "6379"
-CELERY_BROKER_URL = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
-CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+REDIS_HOST = "redis_fastapi"
+REDIS_PORT = 6379
+REDIS_DB = 0
+CELERY_BROKER_URL = "redis://" + REDIS_HOST + ":" + str(REDIS_PORT) + "/0"
+CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + str(REDIS_PORT) + "/0"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
