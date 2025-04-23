@@ -14,6 +14,5 @@ def track_ticket_status_change(sender, instance, **kwargs):
             EventDriver.send_ticket_status_change(
                 ticket_id=instance.pk,
                 project_id=instance.project.project_id,
-                old_status=old_ticket.status,
-                new_status=instance.status,
+                status=instance.status,
             )
