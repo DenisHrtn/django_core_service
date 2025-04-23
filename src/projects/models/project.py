@@ -19,7 +19,6 @@ class Project(AuditMixin, models.Model):
     name = models.CharField(
         max_length=255,
         unique=True,
-        null=False,
         help_text=_("Имя проекта"),
         verbose_name=_("Название"),
     )
