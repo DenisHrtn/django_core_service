@@ -74,16 +74,18 @@ class TicketCreateViewSet(GenericViewSet):
             project_id=project_id, data=request.data, request=request
         )
 
+        serializer = self.get_serializer(ticket)
+
         EventDriver.send_ticket_event(
             ticket_id=ticket.ticket_id,
             project_id=ticket.project.project_id,
             status=ticket.status,
             creator=ticket.creator,
             assignee_ids=ticket.assignee_ids,
+            created_at=ticket.created_at,
             due_date=ticket.due_date,
         )
 
-        serializer = self.get_serializer(ticket)
         return Response(serializer.data, status=201)
 
 

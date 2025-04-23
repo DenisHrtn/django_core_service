@@ -15,6 +15,7 @@ class EventDriver:
     ):
         data = json.dumps(
             {
+                "event_type": "project_event",
                 "project_id": project_id,
                 "owner_id": owner_id,
                 "created_at": created_at,
@@ -22,7 +23,7 @@ class EventDriver:
             }
         )
 
-        send_event(event="project_events", key=str(project_id), value=data)
+        send_event(event="analytics_topic", key=str(project_id), value=data)
 
     @staticmethod
     def send_project_member_event(
@@ -31,12 +32,13 @@ class EventDriver:
     ):
         data = json.dumps(
             {
+                "event_type": "members_event",
                 "project_id": project_id,
                 "user_id": user_id,
             }
         )
 
-        send_event(event="project_member_events", key=str(project_id), value=data)
+        send_event(event="analytics_topic", key=str(project_id), value=data)
 
     @staticmethod
     def send_ticket_event(
@@ -45,34 +47,33 @@ class EventDriver:
         status: str,
         creator: str,
         assignee_ids: list,
+        created_at: datetime,
         due_date: datetime,
     ):
         data = json.dumps(
             {
-                "event_type": "ticket_created",
+                "event_type": "ticket_event",
                 "ticket_id": ticket_id,
                 "project_id": project_id,
                 "status": status,
                 "creator": creator,
                 "assignee_ids": assignee_ids,
+                "created_at": created_at.isoformat() if created_at else None,
                 "due_date": due_date.isoformat() if due_date else None,
             }
         )
 
-        send_event("ticket_topic", key=str(ticket_id), value=data)
+        send_event("analytics_topic", key=str(ticket_id), value=data)
 
     @staticmethod
-    def send_ticket_status_change(
-        ticket_id: int, project_id: int, old_status: str, new_status: str
-    ):
+    def send_ticket_status_change(ticket_id: int, project_id: int, status: str):
         data = json.dumps(
             {
-                "event_type": "ticket_status_changed",
+                "event_type": "ticket_status_change",
                 "ticket_id": ticket_id,
                 "project_id": project_id,
-                "old_status": old_status,
-                "new_status": new_status,
+                "status": status,
             }
         )
 
-        send_event("change_status_topic", key=str(ticket_id), value=data)
+        send_event("analytics_topic", key=str(ticket_id), value=data)
