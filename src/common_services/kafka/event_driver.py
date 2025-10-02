@@ -23,7 +23,7 @@ class EventDriver:
             }
         )
 
-        send_event(event="analytics_topic", key=str(project_id), value=data)
+        send_event(event="analytics_topic", key=str("projects"), value=data)
 
     @staticmethod
     def send_project_member_event(
@@ -38,7 +38,7 @@ class EventDriver:
             }
         )
 
-        send_event(event="analytics_topic", key=str(project_id), value=data)
+        send_event(event="analytics_topic", key=str("project_members"), value=data)
 
     @staticmethod
     def send_ticket_event(
@@ -63,7 +63,7 @@ class EventDriver:
             }
         )
 
-        send_event("analytics_topic", key=str(ticket_id), value=data)
+        send_event("analytics_topic", key=str("tickets"), value=data)
 
     @staticmethod
     def send_ticket_status_change(ticket_id: int, project_id: int, status: str):
@@ -76,4 +76,4 @@ class EventDriver:
             }
         )
 
-        send_event("analytics_topic", key=str(ticket_id), value=data)
+        send_event("analytics_topic", key=str("tickets_statuses"), value=data)
